@@ -1614,7 +1614,7 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10, <3.12"
-content-hash = "5712d3913db52da8377cfdad135c70ca61a8f9d7cbf07338f35a7c997188c809"
+content-hash = "687abc9359a3ffc6cbeed1c26b0f72aeb09daf1f491d691be1cf1623e55ee99e"
 
 [metadata.files]
 appnope = [

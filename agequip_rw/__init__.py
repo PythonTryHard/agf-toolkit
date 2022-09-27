@@ -40,9 +40,7 @@ if not all(
         _verify_substat_env_var("SUBSTAT_4"),
     ]
 ):
-    logger.error(
-        "Missing/Malformed substat coordinate settings! Check your .env file! Exiting..."
-    )
+    logger.error("Missing/Malformed substat coordinate settings! Check your .env file! Exiting...")
     if __name__ == "__main__":
         sys.exit(1)
 

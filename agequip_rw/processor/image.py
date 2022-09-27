@@ -1,6 +1,8 @@
 import os
 
 import cv2
+import numpy as np
+import skimage
 from loguru import logger
 
 from agequip_rw.utils import color
@@ -22,6 +24,12 @@ def template_match(img, template):
     return min_val, max_val, min_loc, max_loc
 
 
+def crop(img, top_left, bottom_right):
+    """Crop an image"""
+    cropped = img[top_left[1] : bottom_right[1], top_left[0] : bottom_right[0]]
+    return cropped
+
+
 def extract_info_box(img: cv2.Mat, template: cv2.Mat) -> ...:
     """
     Get the info box from the screenshot.
@@ -38,15 +46,15 @@ def extract_info_box(img: cv2.Mat, template: cv2.Mat) -> ...:
     """
     # Template matching
     logger.info("Searching for info box.")
-    template_height, template_width = template.shape[:2]  # Allow use of RGB template
+    h, w = template.shape[:2]  # Allow use of RGB template
     _, _, _, max_loc = template_match(img, template)
 
     top_left = max_loc
-    bottom_right = (top_left[0] + template_width, top_left[1] + template_height)
+    bottom_right = (top_left[0] + w, top_left[1] + h)
     logger.debug(f"Match found with bounding box {top_left} -> {bottom_right}.")
 
     # Cropping out the info box to reduce noise
-    info_box = img[top_left[1] : bottom_right[1], top_left[0] : bottom_right[0]]
+    info_box = crop(img, top_left, bottom_right)
 
     return info_box
 
@@ -71,16 +79,45 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
     """
     logger.info("Extracting gear star.")
 
+    # Thresholding to (hopefully) improve contrast
+    t_info_box = cv2.cvtColor(info_box, cv2.COLOR_BGR2GRAY)
+    _, t_info_box = cv2.threshold(t_info_box, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+
+    # Match against the 6 star templates and store the score and matching region
     scores = {}
+    matches = {}
     for star_count, template in star_templates.items():
-        _, max_val, _, _ = template_match(info_box, template)
+        h, w = template.shape[:2]
+        t_template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+        _, t_template = cv2.threshold(t_template, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+
+        _, max_val, _, max_loc = template_match(t_info_box, t_template)
         scores[star_count] = max_val
         logger.debug(f"Template for {star_count}* scored {max_val}.")
 
-    star = max(scores.keys(), key=scores.get)
-    logger.info(
-        f"Gear star detect as {star}* (confidence {scores[star] * 100 :05.4f}%)"
-    )
+        match_region = crop(info_box, max_loc, (max_loc[0] + w, max_loc[1] + h))
+        matches[star_count] = match_region
+
+    star_order = list(sorted(scores.keys(), key=scores.get, reverse=True))  # Max first
+
+    # Resolve ambiguity between 5* and 6* should that arise
+    if star_order[:2] in ([5, 6], [6, 5]) and abs(scores[5] - scores[6]) < 0.035:
+        logger.debug(f"Gear star is ambiguous between 5* and 6* with scores {scores[5]} and {scores[6]}. Resolving.")
+
+        lab_match_region_6 = cv2.cvtColor(matches[6], cv2.COLOR_BGR2LAB)
+        lab_known_6 = np.full_like(lab_match_region_6, (241, 142, 255))
+
+        match_x, match_y = skimage.color.deltaE_ciede2000(lab_match_region_6, lab_known_6, kL=2) < 5
+
+        if len(tuple(zip(match_x, match_y))) > 10:  # Arbitrary threshold, but should be enough to have confidence
+            star = 6
+        else:
+            star = 5
+
+    else:
+        star = star_order[0]
+
+    logger.info(f"Gear star detect as {star}* (confidence {scores[star_order] * 100 :05.4f}%)")
 
     return star
 
@@ -101,15 +138,11 @@ def extract_substat_rarity(info_box: cv2.Mat) -> list[int]:
         for rarity, target_rgb in RARITY_COLORS.items():
             distance = color.color_distance(base_rgb, target_rgb)
             scores[rarity] = distance
-            logger.debug(
-                f"Color distance from base to target {target_rgb} is {distance}."
-            )
+            logger.debug(f"Color distance from base to target {target_rgb} is {distance}.")
 
         # Get rarity. CIEDE2000 should guarantee the closest color is the correct one.
         rarity = min(scores.keys(), key=scores.get)
-        logger.info(
-            f"Substat {i + 1} rarity detected as {constants.RARITY_GRADE_MAPPING[rarity]}"
-        )
+        logger.info(f"Substat {i + 1} rarity detected as {constants.RARITY_GRADE_MAPPING[rarity]}")
 
         if rarity == 4:
             logger.debug("White substat detected. Discarding")

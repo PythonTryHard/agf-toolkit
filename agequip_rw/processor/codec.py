@@ -31,9 +31,7 @@ def encode(
         if stat_type in ("ATK", "DEF", "HP") and "%" in value:
             stat_type += " (%)"
 
-        encoded_substat = ",".join(
-            map(str, (constants.STAT_TYPE_MAPPING[stat_type], value, rarity))
-        )
+        encoded_substat = ",".join(map(str, (constants.STAT_TYPE_MAPPING[stat_type], value, rarity)))
         substats.append(encoded_substat)
 
     return "{},{},{},{},{},{},{}".format(
@@ -62,33 +60,23 @@ def decode(text: str) -> dict:
         *substats,
     ) = text.split(",")
 
-    decode_result["gear_type"] = reverse_dict(constants.GEAR_TYPE_MAPPING)[
-        int(encoded_type)
-    ]
-    decode_result["gear_set"] = reverse_dict(constants.SET_NAME_MAPPING)[
-        int(encoded_set)
-    ]
+    decode_result["gear_type"] = reverse_dict(constants.GEAR_TYPE_MAPPING)[int(encoded_type)]
+    decode_result["gear_set"] = reverse_dict(constants.SET_NAME_MAPPING)[int(encoded_set)]
     decode_result["gear_rarity"] = int(gear_rarity)
     decode_result["gear_star"] = int(gear_star)
 
     # Main stat
-    decode_result["mainstat_type"] = reverse_dict(constants.STAT_TYPE_MAPPING)[
-        int(mainstat_type)
-    ]
+    decode_result["mainstat_type"] = reverse_dict(constants.STAT_TYPE_MAPPING)[int(mainstat_type)]
     decode_result["mainstat_value"] = mainstat_value
 
     # Substat infos
     decode_result["substats"] = []
-    for substat in [
-        substats[i : i + 3] for i in range(0, len(substats), 3)
-    ]:  # Split into 3s
+    for substat in [substats[i : i + 3] for i in range(0, len(substats), 3)]:  # Split into 3s
         stat_type, value, rarity = substat
 
         stat_type = reverse_dict(constants.STAT_TYPE_MAPPING)[int(stat_type)]
         rarity = constants.RARITY_GRADE_MAPPING[int(rarity)]
 
-        decode_result["substats"].append(
-            {"type": stat_type, "value": value, "rarity": rarity}
-        )
+        decode_result["substats"].append({"type": stat_type, "value": value, "rarity": rarity})
 
     return decode_result

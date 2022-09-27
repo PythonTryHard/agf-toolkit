@@ -18,10 +18,14 @@ loguru = "^0.6.0"
 colormath = {git = "https://github.com/PythonTryHard/python-colormath.git"}
 paddlepaddle = "^2.3.2"
 pyzmq = "^24.0.1"
+scikit-image = "^0.19.3"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.15.3"
 black = "^22.8.0"
+
+[tool.black]
+line-length=120
 
 [build-system]
 requires = ["poetry-core"]

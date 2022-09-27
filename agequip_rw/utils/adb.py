@@ -47,9 +47,7 @@ def get_device(client: Client) -> Device:
         case "ip":
             ip, port = os.environ.get("IDENTIFIER"), int(os.environ.get("PORT"))
             if client.remote_connect(host=ip, port=port):
-                device = list(
-                    filter(lambda x: x.serial == f"{ip}:{port}", client.devices())
-                )[0]
+                device = list(filter(lambda x: x.serial == f"{ip}:{port}", client.devices()))[0]
                 logger.info("Connected to device.")
                 return device
 
@@ -58,9 +56,7 @@ def get_device(client: Client) -> Device:
             sys.exit(1)
 
     # Since all code paths either return or exit, this should be reached when device is not found.
-    logger.error(
-        "Could not find/connect to device! Please check your '.env' file and try again!"
-    )
+    logger.error("Could not find/connect to device! Please check your '.env' file and try again!")
     if __name__ == "__main__":
         sys.exit(1)
 

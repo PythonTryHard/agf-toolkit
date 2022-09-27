@@ -12,9 +12,7 @@ STAT_REGEX = "({})".format("|".join(re.escape(i) for i in constants.STAT_TYPE_MA
 MAINSTAT_REGEX = STAT_REGEX + r"\s*?(\d+?%?)\s"
 SUBSTAT_REGEX = STAT_REGEX + r"\s*?[\(\[\{]Locked[\)\]\}]\s*?(\d+?(\.\d+?)?%?)\s"
 
-logger.info(
-    "If this is your first start, the OCR model will be downloaded (roughly 20MB)."
-)
+logger.info("If this is your first start, the OCR model will be downloaded (roughly 20MB).")
 logger.info("Loading OCR model.")
 OCR = PaddleOCR(use_angle_cls=False, lang="en", show_log=False)
 
