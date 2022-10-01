@@ -1,7 +1,6 @@
 import cv2
-from colormath.color_objects import sRGBColor, LabColor
-from colormath.color_conversions import convert_color
-from colormath.color_diff import delta_e_cie2000
+import numpy as np
+from skimage import color
 
 # Type hints for dealing with OpenCV's BGR magic
 R = G = B = int
@@ -20,8 +19,7 @@ def color_distance(base: tuple[R, G, B], target: tuple[R, G, B]):
     made worse when dealing with UI elements with non-one alpha component (or non-255 in sRGB) and
     JPEG compression artefacts (if any). CIEDE2000 should hopefully be able to tighten this margin.
     """
-    base_converted = convert_color(sRGBColor(*base, is_upscaled=True), LabColor)
-    target_converted = convert_color(sRGBColor(*target, is_upscaled=True), LabColor)
+    lab_base = cv2.cvtColor(np.array([[list(base)]], dtype=np.uint8), cv2.COLOR_RGB2LAB)
+    lab_target = cv2.cvtColor(np.array([[list(target)]], dtype=np.uint8), cv2.COLOR_RGB2LAB)
 
-    delta_e = delta_e_cie2000(base_converted, target_converted)
-    return delta_e
+    return float(color.deltaE_ciede2000(lab_base, lab_target, kL=2))
