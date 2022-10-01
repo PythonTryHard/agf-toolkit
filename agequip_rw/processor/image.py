@@ -95,7 +95,7 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
 
         _, max_val, _, max_loc = template_match(t_info_box, t_template)
         scores[star_count] = max_val
-        logger.debug(f"Template for {star_count}* scored {max_val}.")
+        logger.debug(f"Template for {star_count}* scored {max_val * 100 :05.4f}%.")
 
         match_region = crop(info_box, max_loc, (max_loc[0] + w, max_loc[1] + h))
         matches[star_count] = match_region
@@ -104,7 +104,7 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
 
     # Resolve ambiguity between 5* and 6* should that arise
     if star_order[:2] in ([5, 6], [6, 5]) and (delta := abs(scores[5] - scores[6])) < AMBIGUITY_THRESHOLD:
-        logger.debug(f"Gear star is ambiguous between 5* and 6* with delta {delta}. Resolving.")
+        logger.debug(f"Gear star is ambiguous between 5* and 6* with delta {delta * 100 :05.4f}%. Resolving.")
 
         lab_match_region_6 = cv2.cvtColor(matches[6], cv2.COLOR_BGR2LAB)
         lab_known_6 = cv2.cvtColor(np.full_like(lab_match_region_6, PURPLE_RARITY_STAR), cv2.COLOR_BGR2LAB)
@@ -148,7 +148,7 @@ def extract_sub_stat_rarity(info_box: cv2.Mat) -> tuple[str, dict[int, str]]:
         for rarity, target_rgb in RARITY_COLORS.items():
             distance = color.color_distance(base_rgb, target_rgb)
             scores[rarity] = distance
-            logger.debug(f"Color distance from base to target {target_rgb} is {distance}.")
+            logger.debug(f"Delta-E to {rarity}-rarity {target_rgb} is {distance :05.4f}.")
 
         # Get rarity. CIEDE2000 should guarantee the closest color is the correct one.
         rarity = min(scores.keys(), key=scores.get)

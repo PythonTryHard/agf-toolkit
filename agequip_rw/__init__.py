@@ -29,7 +29,7 @@ logger.add(
     ),
 )
 
-logger.debug("Logging 'DEBUG' messages too")
+logger.debug("Logging 'DEBUG' messages too.")
 
 logger.info("Verifying environment variables.")
 if not all(
