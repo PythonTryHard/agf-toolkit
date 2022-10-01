@@ -1,4 +1,6 @@
+import json
 import sys
+
 from loguru import logger
 
 from agequip_rw import templates
@@ -40,7 +42,8 @@ try:
             main_stat=main_stat,
             sub_stats=sub_stats,
         )
-        print(gear)
+        logger.info(f"Result (JSON): {json.dumps(gear.as_dict())}")
+        logger.info(f"Result (encoded): {gear}")
 
 except KeyboardInterrupt:
     logger.info("Received keyboard interrupt. Exiting...")
