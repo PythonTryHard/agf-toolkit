@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Union
 
-
 GEAR_TYPE_MAPPING = {
     "Weapon System": 0,
     "Power System": 1,

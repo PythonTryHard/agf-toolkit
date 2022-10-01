@@ -1,12 +1,12 @@
 import os
-from io import BytesIO
 import sys
+from io import BytesIO
 
 import cv2
 import numpy as np
 from loguru import logger
-from ppadb.device import Device
 from ppadb.client import Client
+from ppadb.device import Device
 
 
 def get_adb_client() -> Client:

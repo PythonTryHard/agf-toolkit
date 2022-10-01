@@ -3,10 +3,9 @@ import sys
 
 from loguru import logger
 
-from agequip_rw import templates
-from agequip_rw.utils import adb
-from agequip_rw.processor import image, text, gears
-
+from agf_toolkit import templates
+from agf_toolkit.processor import gears, image, text
+from agf_toolkit.utils import adb
 
 # Initialise ADB connection
 ADB = adb.get_adb_client()

@@ -4,8 +4,7 @@ import cv2
 from loguru import logger
 from paddleocr import PaddleOCR
 
-from agequip_rw.processor import gears
-
+from agf_toolkit.processor import gears
 
 STAT_REGEX = "({})".format("|".join(re.escape(i) for i in gears.STAT_TYPE_MAPPING))
 MAINSTAT_REGEX = STAT_REGEX + r"\s*?\s*?(\d+?(\.\d+?)?%?)\s"

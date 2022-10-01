@@ -5,7 +5,7 @@ import numpy as np
 import skimage
 from loguru import logger
 
-from agequip_rw.utils import color
+from agf_toolkit.utils import color
 
 AMBIGUITY_THRESHOLD = 0.05
 PURPLE_RARITY_STAR = (241, 142, 255)
