@@ -107,7 +107,7 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
         lab_match_region_6 = cv2.cvtColor(matches[6], cv2.COLOR_BGR2LAB)
         lab_known_6 = np.full_like(lab_match_region_6, (241, 142, 255))
 
-        match_x, match_y = skimage.color.deltaE_ciede2000(lab_match_region_6, lab_known_6, kL=2) < 5
+        match_x, match_y = np.where(skimage.color.deltaE_ciede2000(lab_match_region_6, lab_known_6, kL=2) < 5)
 
         if len(tuple(zip(match_x, match_y))) > 10:  # Arbitrary threshold, but should be enough to have confidence
             star = 6
