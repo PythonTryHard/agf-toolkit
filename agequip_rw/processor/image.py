@@ -111,13 +111,14 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
 
         if len(tuple(zip(match_x, match_y))) > 10:  # Arbitrary threshold, but should be enough to have confidence
             star = 6
+            logger.info(f"Gear star detect as {star}*")
         else:
             star = 5
+            logger.info(f"Gear star detect as {star}*")
 
     else:
         star = star_order[0]
-
-    logger.info(f"Gear star detect as {star}* (confidence {scores[star] * 100 :05.4f}%)")
+        logger.info(f"Gear star detect as {star}* (confidence {scores[star] * 100 :05.4f}%)")
 
     return star
 
