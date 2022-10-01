@@ -41,7 +41,7 @@ SET_NAME_MAPPING = {
 }
 
 RARITY_GRADE_MAPPING = {
-    "Gold": 0,
+    "Yellow": 0,
     "Purple": 1,
     "Blue": 2,
     "Green": 3,
