@@ -105,7 +105,7 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
         logger.debug(f"Gear star is ambiguous between 5* and 6* with scores {scores[5]} and {scores[6]}. Resolving.")
 
         lab_match_region_6 = cv2.cvtColor(matches[6], cv2.COLOR_BGR2LAB)
-        lab_known_6 = np.full_like(lab_match_region_6, (241, 142, 255))
+        lab_known_6 = cv2.cvtColor(np.full_like(lab_match_region_6, (241, 142, 255)), cv2.COLOR_BGR2LAB)
 
         match_x, match_y = np.where(skimage.color.deltaE_ciede2000(lab_match_region_6, lab_known_6, kL=2) < 5)
 
