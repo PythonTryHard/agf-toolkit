@@ -142,11 +142,11 @@ def extract_substat_rarity(info_box: cv2.Mat) -> list[int]:
 
         # Get rarity. CIEDE2000 should guarantee the closest color is the correct one.
         rarity = min(scores.keys(), key=scores.get)
-        logger.info(f"Substat {i + 1} rarity detected as {constants.RARITY_GRADE_MAPPING[rarity]}")
 
-        if rarity == 4:
+        if rarity == "White":
             logger.debug("White substat detected. Discarding")
         else:
+            logger.info(f"Substat {i + 1} rarity detected as {rarity}")
             result[i] = rarity
 
     return result
