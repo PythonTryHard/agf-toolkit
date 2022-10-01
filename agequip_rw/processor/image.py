@@ -122,20 +122,20 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
     return star
 
 
-def extract_substat_rarity(info_box: cv2.Mat) -> tuple[str, dict[int, str]]:
+def extract_sub_stat_rarity(info_box: cv2.Mat) -> tuple[str, dict[int, str]]:
     """
-    Extract substats' rarity via pixel-checking.
+    Extract sub stats' rarity via pixel-checking.
     
-    This also extract gear's rarity thanks to the substat count-gear rarity correlation.
+    This also extract gear's rarity thanks to the sub stat count-gear rarity correlation.
     """
     logger.info("Extracting substat rarity.")
 
     result = {}
-    for i, substat in enumerate(("SUBSTAT_1", "SUBSTAT_2", "SUBSTAT_3", "SUBSTAT_4")):
+    for i, sub_stat in enumerate(("SUBSTAT_1", "SUBSTAT_2", "SUBSTAT_3", "SUBSTAT_4")):
         # Extract color of pixel
-        x, y = map(int, os.environ.get(substat).split(","))
+        x, y = map(int, os.environ.get(sub_stat).split(","))
         base_rgb = color.get_rgb(info_box, x, y)
-        logger.debug(f"Color of {substat} is {base_rgb}.")
+        logger.debug(f"Color of {sub_stat} is {base_rgb}.")
 
         # Loop over rarity color and calculate distance
         scores = {}
@@ -148,9 +148,9 @@ def extract_substat_rarity(info_box: cv2.Mat) -> tuple[str, dict[int, str]]:
         rarity = min(scores.keys(), key=scores.get)
 
         if rarity == "White":
-            logger.debug("White substat detected. Discarding")
+            logger.debug("White sub stat detected. Discarding")
         else:
-            logger.info(f"Substat {i + 1} rarity detected as {rarity}")
+            logger.info(f"Sub stat {i + 1} rarity detected as {rarity}")
             result[i] = rarity
 
     gear_rarity = list(RARITY_COLORS)[len(RARITY_COLORS) - len(result) - 1]

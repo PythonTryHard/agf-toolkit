@@ -9,7 +9,7 @@ from agequip_rw.processor import gears
 
 STAT_REGEX = "({})".format("|".join(re.escape(i) for i in gears.STAT_TYPE_MAPPING))
 MAINSTAT_REGEX = STAT_REGEX + r"\s*?(\d+?%?)\s"
-SUBSTAT_REGEX = STAT_REGEX + r"\s*?[\(\[\{]Locked[\)\]\}]\s*?(\d+?(\.\d+?)?%?)\s"
+SUB_STAT_REGEX = STAT_REGEX + r"\s*?[\(\[\{]Locked[\)\]\}]\s*?(\d+?(\.\d+?)?%?)\s"
 
 logger.info("If this is your first start, the OCR model will be downloaded (roughly 20MB).")
 logger.info("Loading OCR model.")
@@ -40,15 +40,15 @@ def extract_gear_type(ocr_string: str) -> str:
             return i
 
 
-def extract_mainstat(ocr_string: str) -> tuple[str, str]:
+def extract_main_stat(ocr_string: str) -> tuple[str, str]:
     """Extract gear mainstat from the OCR-ed string."""
     main_stat = re.search(MAINSTAT_REGEX, ocr_string).groups()
     logger.info(f"Main stat detected as: {main_stat}")
     return main_stat
 
 
-def extract_substat(ocr_string: str) -> list[tuple[str, str]]:
+def extract_sub_stats(ocr_string: str) -> list[tuple[str, str]]:
     """Extract gear substats from the OCR-ed string."""
-    substats = [i[:2] for i in re.findall(SUBSTAT_REGEX, ocr_string)]
+    substats = [i[:2] for i in re.findall(SUB_STAT_REGEX, ocr_string)]
     logger.info(f"Sub stats detected as: {substats}")
     return substats
