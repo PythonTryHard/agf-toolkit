@@ -19,9 +19,9 @@ OCR = PaddleOCR(use_angle_cls=False, lang="en", show_log=False)
 def extract_text(image: cv2.Mat) -> str:
     """Extract text from gear info box. At least it's more accurate than Tesseract"""
     logger.info("Starting OCR on gear info.")
-    result = OCR.ocr(image, cls=False)
-    logger.debug(f"OCR result:\n{result}")
-    return " ".join(i[-1][0] for i in result)
+    result = " ".join(i[-1][0] for i in OCR.ocr(image, cls=False))
+    logger.debug(f"OCR result: {result}")
+    return result
 
 
 def extract_gear_set(ocr_string: str) -> str:
