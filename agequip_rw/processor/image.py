@@ -7,7 +7,7 @@ from loguru import logger
 
 from agequip_rw.utils import color
 
-
+PURPLE_RARITY_STAR = (241, 142, 255)
 RARITY_COLORS = {
     "Yellow": (254, 205, 51),
     "Purple": (217, 169, 249),
@@ -15,6 +15,7 @@ RARITY_COLORS = {
     "Green": (141, 223, 186),
     "White": (246, 247, 247),
 }
+CIEDE_PIXEL_THRESHOLD = 10
 
 
 def template_match(img, template):
@@ -101,15 +102,18 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
     star_order = list(sorted(scores.keys(), key=scores.get, reverse=True))  # Max first
 
     # Resolve ambiguity between 5* and 6* should that arise
-    if star_order[:2] in ([5, 6], [6, 5]) and abs(scores[5] - scores[6]) < 0.035:
-        logger.debug(f"Gear star is ambiguous between 5* and 6* with scores {scores[5]} and {scores[6]}. Resolving.")
+    if star_order[:2] in ([5, 6], [6, 5]) and (delta := abs(scores[5] - scores[6])) < 0.035:
+        logger.debug(f"Gear star is ambiguous between 5* and 6* with delta {delta}. Resolving.")
 
         lab_match_region_6 = cv2.cvtColor(matches[6], cv2.COLOR_BGR2LAB)
-        lab_known_6 = cv2.cvtColor(np.full_like(lab_match_region_6, (241, 142, 255)), cv2.COLOR_BGR2LAB)
+        lab_known_6 = cv2.cvtColor(np.full_like(lab_match_region_6, PURPLE_RARITY_STAR), cv2.COLOR_BGR2LAB)
 
+        logger.debug(f"Calculating delta between match region and known 6* color {PURPLE_RARITY_STAR}.")
         match_x, match_y = np.where(skimage.color.deltaE_ciede2000(lab_match_region_6, lab_known_6, kL=2) < 5)
 
-        if len(tuple(zip(match_x, match_y))) > 10:  # Arbitrary threshold, but should be enough to have confidence
+        match_pixel_count = len(tuple(zip(match_x, match_y)))
+        logger.debug(f"Match region has {match_pixel_count}/{CIEDE_PIXEL_THRESHOLD} pixels matching known 6* color.")
+        if match_pixel_count > CIEDE_PIXEL_THRESHOLD:  # Arbitrary threshold, but should be enough to have confidence
             star = 6
             logger.info(f"Gear star detect as {star}*")
         else:
