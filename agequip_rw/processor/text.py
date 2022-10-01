@@ -8,7 +8,7 @@ from agequip_rw.processor import gears
 
 
 STAT_REGEX = "({})".format("|".join(re.escape(i) for i in gears.STAT_TYPE_MAPPING))
-MAINSTAT_REGEX = STAT_REGEX + r"\s*?(\d+?%?)\s"
+MAINSTAT_REGEX = STAT_REGEX + r"\s*?\s*?(\d+?(\.\d+?)?%?)\s"
 SUB_STAT_REGEX = STAT_REGEX + r"\s*?[\(\[\{]Locked[\)\]\}]\s*?(\d+?(\.\d+?)?%?)\s"
 
 logger.info("If this is your first start, the OCR model will be downloaded (roughly 20MB).")
@@ -42,7 +42,7 @@ def extract_gear_type(ocr_string: str) -> str:
 
 def extract_main_stat(ocr_string: str) -> gears.Stat:
     """Extract gear mainstat from the OCR-ed string."""
-    main_stat = re.search(MAINSTAT_REGEX, ocr_string).groups()
+    main_stat = re.search(MAINSTAT_REGEX, ocr_string).groups()[:2]
     logger.info(f"Main stat detected as: {main_stat}")
     return gears.Stat(*main_stat, None)
 
