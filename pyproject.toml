@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "agequip-rw"
+name = "agf_toolkit"
 version = "0.0.1"
-description = "Data collection of equipments for Artery Gear: Fusion"
+description = "A toolkit for Artery Gear: Fusion"
 authors = ["PythonTryHard <31789326+PythonTryHard@users.noreply.github.com>"]
-license = "MIT"
+license = "BSD-3-Clause"
 readme = "README.md"
-packages = [{include = "agequip_rw"}]
+packages = [{include = "agf_toolkit"}]
 
 [tool.poetry.dependencies]
 python = "^3.10, <3.12"

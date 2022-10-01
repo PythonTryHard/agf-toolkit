@@ -1,5 +1,5 @@
-__name__ = "agequip_rw"
-__description__ = "A tool to aid collection of Artery Gear: Fusion (AGF)'s gear data"
+__name__ = "agf_toolkit"
+__description__ = "A toolkit for Artery Gear: Fusion"
 __version__ = "0.1.0"
 __author__ = "PythonTryHard - Arisu#9695 (<@!263986827214585857>)"
 
