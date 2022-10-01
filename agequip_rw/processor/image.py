@@ -117,7 +117,7 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
     else:
         star = star_order[0]
 
-    logger.info(f"Gear star detect as {star}* (confidence {scores[star_order] * 100 :05.4f}%)")
+    logger.info(f"Gear star detect as {star}* (confidence {scores[star] * 100 :05.4f}%)")
 
     return star
 
