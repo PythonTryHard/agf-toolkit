@@ -23,9 +23,28 @@ numpy = "^1.23.3"
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.15.3"
 black = "^22.8.0"
+pre-commit = "^2.20.0"
+isort = "^5.10.1"
+mypy = "^0.981"
+pylint = "^2.15.3"
 
 [tool.black]
 line-length=120
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint.'MESSAGES CONTROL']
+max-line-length = 120
+disable = [
+    "missing-module-docstring",
+    "unused-argument",
+    "expression-not-assigned",
+    "too-few-public-methods"
+]
+ignore-paths = [
+    "tests"
+]
 
 [build-system]
 requires = ["poetry-core"]
