@@ -7,6 +7,7 @@ from loguru import logger
 
 from agequip_rw.utils import color
 
+AMBIGUITY_THRESHOLD = 0.05
 PURPLE_RARITY_STAR = (241, 142, 255)
 RARITY_COLORS = {
     "Yellow": (254, 205, 51),
@@ -102,7 +103,7 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
     star_order = list(sorted(scores.keys(), key=scores.get, reverse=True))  # Max first
 
     # Resolve ambiguity between 5* and 6* should that arise
-    if star_order[:2] in ([5, 6], [6, 5]) and (delta := abs(scores[5] - scores[6])) < 0.035:
+    if star_order[:2] in ([5, 6], [6, 5]) and (delta := abs(scores[5] - scores[6])) < AMBIGUITY_THRESHOLD:
         logger.debug(f"Gear star is ambiguous between 5* and 6* with delta {delta}. Resolving.")
 
         lab_match_region_6 = cv2.cvtColor(matches[6], cv2.COLOR_BGR2LAB)
