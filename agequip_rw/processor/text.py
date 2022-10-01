@@ -4,10 +4,10 @@ import cv2
 from loguru import logger
 from paddleocr import PaddleOCR
 
-from agequip_rw.processor import constants
+from agequip_rw.processor import gears
 
 
-STAT_REGEX = "({})".format("|".join(re.escape(i) for i in constants.STAT_TYPE_MAPPING))
+STAT_REGEX = "({})".format("|".join(re.escape(i) for i in gears.STAT_TYPE_MAPPING))
 MAINSTAT_REGEX = STAT_REGEX + r"\s*?(\d+?%?)\s"
 SUBSTAT_REGEX = STAT_REGEX + r"\s*?[\(\[\{]Locked[\)\]\}]\s*?(\d+?(\.\d+?)?%?)\s"
 
@@ -26,7 +26,7 @@ def extract_text(image: cv2.Mat) -> str:
 
 def extract_gear_set(ocr_string: str) -> str:
     """Extract gear grade from OCR-ed string"""
-    for i in constants.SET_NAME_MAPPING:
+    for i in gears.SET_NAME_MAPPING:
         if i in ocr_string:
             logger.info(f"Gear set detected as {i}")
             return i
@@ -34,7 +34,7 @@ def extract_gear_set(ocr_string: str) -> str:
 
 def extract_gear_type(ocr_string: str) -> str:
     """Extract gear type from the OCR-ed string."""
-    for i in constants.GEAR_TYPE_MAPPING:
+    for i in gears.GEAR_TYPE_MAPPING:
         if i in ocr_string:
             logger.info(f"Gear type detected as {i}")
             return i

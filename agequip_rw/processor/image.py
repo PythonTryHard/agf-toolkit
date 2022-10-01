@@ -6,14 +6,14 @@ import skimage
 from loguru import logger
 
 from agequip_rw.utils import color
-from agequip_rw.processor import constants
+
 
 RARITY_COLORS = {
-    0: (254, 205, 51),
-    1: (217, 169, 249),
-    2: (138, 199, 252),
-    3: (141, 223, 186),
-    4: (246, 247, 247),
+    "Yellow": (254, 205, 51),
+    "Purple": (217, 169, 249),
+    "Blue"  : (138, 199, 252),
+    "Green" : (141, 223, 186),
+    "White" : (246, 247, 247),
 }
 
 
