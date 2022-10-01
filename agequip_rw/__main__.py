@@ -3,7 +3,7 @@ from loguru import logger
 
 from agequip_rw import templates
 from agequip_rw.utils import adb
-from agequip_rw.processor import image, text, codec
+from agequip_rw.processor import image, text, gears
 
 
 # Initialise ADB connection
@@ -21,27 +21,25 @@ try:
         info_text = text.extract_text(info_image)
 
         # Extract information from info_box
-        substat_rarity = image.extract_substat_rarity(info_image)
-        substat_data = text.extract_substat(info_text)
+        gear_rarity, _sub_stat_rarity = image.extract_sub_stat_rarity(info_image)
+        _sub_stat_data = text.extract_sub_stats(info_text)
 
-        mainstat_data = text.extract_mainstat(info_text)
+        main_stat = text.extract_main_stat(info_text)
+        sub_stats = list(gears.Stat(*data, rarity) for data, rarity in zip(_sub_stat_data, _sub_stat_rarity.values()))
 
         gear_star = image.extract_gear_star(info_image, templates.STARS)
-        gear_rarity = len(substat_rarity)  # Number of substats correlate to rarity
         gear_set = text.extract_gear_set(info_text)
         gear_type = text.extract_gear_type(info_text)
 
-        # Print out encoded data
-        encoded_string = codec.encode(
-            gear_type,
-            gear_rarity,
-            gear_star,
-            gear_set,
-            mainstat_data,
-            substat_rarity,
-            substat_data,
-        )
-        print(encoded_string)
+        # Compose the gear
+        gear = gears.Gear(
+            gear_set=gear_set,
+            gear_type=gear_type, 
+            star=gear_star, 
+            rarity=gear_rarity,
+            main_stat=main_stat, 
+            sub_stats=sub_stats)
+        print(gear)
 
 except KeyboardInterrupt:
     logger.info("Received keyboard interrupt. Exiting...")

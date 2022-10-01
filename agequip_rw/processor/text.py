@@ -40,11 +40,11 @@ def extract_gear_type(ocr_string: str) -> str:
             return i
 
 
-def extract_main_stat(ocr_string: str) -> tuple[str, str]:
+def extract_main_stat(ocr_string: str) -> gears.Stat:
     """Extract gear mainstat from the OCR-ed string."""
     main_stat = re.search(MAINSTAT_REGEX, ocr_string).groups()
     logger.info(f"Main stat detected as: {main_stat}")
-    return main_stat
+    return gears.Stat(*main_stat, None)
 
 
 def extract_sub_stats(ocr_string: str) -> list[tuple[str, str]]:
