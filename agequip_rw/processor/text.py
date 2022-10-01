@@ -1,5 +1,4 @@
 import re
-from tkinter.tix import MAIN
 
 import cv2
 from loguru import logger
