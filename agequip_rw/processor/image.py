@@ -122,8 +122,12 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
     return star
 
 
-def extract_substat_rarity(info_box: cv2.Mat) -> list[int]:
-    """Extract substats' rarity via pixel-checking."""
+def extract_substat_rarity(info_box: cv2.Mat) -> tuple[str, dict[int, str]]:
+    """
+    Extract substats' rarity via pixel-checking.
+    
+    This also extract gear's rarity thanks to the substat count-gear rarity correlation.
+    """
     logger.info("Extracting substat rarity.")
 
     result = {}
@@ -149,4 +153,7 @@ def extract_substat_rarity(info_box: cv2.Mat) -> list[int]:
             logger.info(f"Substat {i + 1} rarity detected as {rarity}")
             result[i] = rarity
 
-    return result
+    gear_rarity = list(RARITY_COLORS)[len(RARITY_COLORS) - len(result) - 1]
+    logger.info(f"Gear rarity detected to be {gear_rarity}")
+
+    return gear_rarity, result
