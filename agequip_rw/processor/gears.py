@@ -49,7 +49,6 @@ RARITY_GRADE_MAPPING = {
 }
 
 
-
 def _reverse_dict(d: dict) -> dict:
     return {v: k for k, v in d.items()}
 
@@ -58,13 +57,14 @@ def _reverse_dict(d: dict) -> dict:
 class Stat:
     """
     Stat class for gear substats.
-    
+
     Attributes
     ----------
     stat_type   : str               = Type of stat.
     value       : str               = Value of stat. May contain "%" if gear type is percentage.
     rarity      : Union[str, None]  = Rarity of stat. None if not applicable (i.e. main stat).
     """
+
     stat_type: str
     value: str
     rarity: Union[str, None]
@@ -99,7 +99,7 @@ class Stat:
 class Gear:
     """
     Gear class for gear info.
-    
+
     Attributes
     ----------
     gear_set    : str           = Set of gear.
@@ -109,6 +109,7 @@ class Gear:
     mainstat    : Stat          = Main stat of gear.
     substats    : list[Stat]    = Sub stats of gear.
     """
+
     gear_set: str
     gear_type: str
     rarity: str
@@ -151,9 +152,9 @@ class Gear:
     def parse_string(cls, gear_string: str):
         """Parse a string into a Gear object."""
         gear_set, gear_type, rarity, star, *stats = gear_string.split(",")
-        
+
         main_stat = Stat.parse(*stats[:3])
-        sub_stats = [Stat.parse(*i) for i in [stats[i:i+3] for i in range(3, len(stats), 3)]]  # Split to 3s
+        sub_stats = [Stat.parse(*i) for i in [stats[i : i + 3] for i in range(3, len(stats), 3)]]  # Split to 3s
 
         return cls(
             gear_set=_reverse_dict(SET_NAME_MAPPING)[int(gear_set)],

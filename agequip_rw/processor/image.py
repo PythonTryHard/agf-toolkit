@@ -11,9 +11,9 @@ from agequip_rw.utils import color
 RARITY_COLORS = {
     "Yellow": (254, 205, 51),
     "Purple": (217, 169, 249),
-    "Blue"  : (138, 199, 252),
-    "Green" : (141, 223, 186),
-    "White" : (246, 247, 247),
+    "Blue": (138, 199, 252),
+    "Green": (141, 223, 186),
+    "White": (246, 247, 247),
 }
 
 
@@ -126,7 +126,7 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
 def extract_sub_stat_rarity(info_box: cv2.Mat) -> tuple[str, dict[int, str]]:
     """
     Extract sub stats' rarity via pixel-checking.
-    
+
     This also extract gear's rarity thanks to the sub stat count-gear rarity correlation.
     """
     logger.info("Extracting substat rarity.")

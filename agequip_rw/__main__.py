@@ -34,11 +34,12 @@ try:
         # Compose the gear
         gear = gears.Gear(
             gear_set=gear_set,
-            gear_type=gear_type, 
-            star=gear_star, 
+            gear_type=gear_type,
+            star=gear_star,
             rarity=gear_rarity,
-            main_stat=main_stat, 
-            sub_stats=sub_stats)
+            main_stat=main_stat,
+            sub_stats=sub_stats,
+        )
         print(gear)
 
 except KeyboardInterrupt:

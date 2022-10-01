@@ -10,9 +10,7 @@ R = G = B = int
 
 def get_rgb(bgr_image: cv2.Mat, x: int, y: int) -> tuple[R, G, B]:
     """Get RGB color at coordinate (x,y) of a BGR image."""
-    rgb = tuple(bgr_image[y, x])[
-        ::-1
-    ]  # Coordinate is flipped when dealing with numpy array
+    rgb = tuple(bgr_image[y, x])[::-1]  # Coordinate is flipped when dealing with numpy array
     logger.debug(f"Color at ({x}, {y}) captured = {rgb}")
 
     return rgb
