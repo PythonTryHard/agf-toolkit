@@ -19,7 +19,7 @@ try:
         # Grab screenshot and pre-process
         scrsht = adb.screencap(DEVICE)
         info_image = image.extract_info_box(scrsht, templates.INFO_BOX)
-        info_text = text.extract_text(info_image)
+        info_text = text.extract_text(info_image)  # pylint: disable=invalid-name
 
         # Extract information from info_box
         gear_rarity, _sub_stat_rarity = image.extract_sub_stat_rarity(info_image)

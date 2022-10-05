@@ -42,10 +42,10 @@ CONNECTION_TYPE="USB"
 # IDENTIFIER=""
 # PORT=""
 
-SUBSTAT_1="0,0"
-SUBSTAT_2="0,0"
-SUBSTAT_3="0,0"
-SUBSTAT_4="0,0"
+SUB_STAT_1="0,0"
+SUB_STAT_2="0,0"
+SUB_STAT_3="0,0"
+SUB_STAT_4="0,0"
 ```
 - `DEBUG` when set to anything other than `""` will enable debug logging.
 - `ADB_IP` and `ADB_PORT` is for connecting to the local ADB server. Most of the time, you won't need to touch this.
@@ -54,7 +54,7 @@ SUBSTAT_4="0,0"
   - `IP` is for connecting to your Android device via network. **If you're using an emulator**, most likely you'll need this.
 - `IDENTIFIER` is for the serial number of your Android device. You can find this by running `adb devices` in your terminal. If you're connecting via `IP`, this is the IP address of your Android device.
 - `PORT` is the debugging port of your Android device. This is ignored when connecting via `USB`. 
-- `SUBSTAT_1` to `4` is the coordinate that the program use to detect gears' sub stat's rarity. For more detail, see [Template preparation/Gear info box](#gear-info-box).
+- `SUB_STAT_1` to `4` is the coordinate that the program use to detect gears' sub stat's rarity. For more detail, see [Template preparation/Gear info box](#gear-info-box).
 
 ## Template preparation
 You will need 6-7 screenshots: 1 of your gear info box and 5-6 of your gear's star grade. The screenshots should be placed in `./agf_tookit/templates` and named as follows:

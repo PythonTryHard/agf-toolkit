@@ -33,9 +33,10 @@ line-length=120
 
 [tool.isort]
 profile = "black"
-
+    
 [tool.pylint.'MESSAGES CONTROL']
 max-line-length = 120
+generated-members = ["cv2.*"]
 disable = [
     "missing-module-docstring",
     "unused-argument",
@@ -43,8 +44,26 @@ disable = [
     "too-few-public-methods"
 ]
 ignore-paths = [
-    "tests"
+    "tests",
+    "agf_toolkit/templates_sample",
+    "agf_toolkit/templates"
 ]
+
+[[tool.mypy.overrides]]
+module = "cv2.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "paddleocr.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "skimage.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "ppadb.*"
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core"]

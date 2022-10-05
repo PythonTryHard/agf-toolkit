@@ -32,12 +32,12 @@ def crop(img, top_left, bottom_right):
     return cropped
 
 
-def extract_info_box(img: cv2.Mat, template: cv2.Mat) -> ...:
+def extract_info_box(img: cv2.Mat, template: cv2.Mat) -> cv2.Mat:
     """
     Get the info box from the screenshot.
 
     This approach does not scale, however, due to the stiff nature of template matching. While
-    multi-scale template matching is a thing, it is much more expensive, especially when dealing
+    multiscale template matching is a thing, it is much more expensive, especially when dealing
     with typical 1080p phone screenshots. Feature matching while works more generally (i.e. the
     template does not need to be regenerated), it's ignored since this is a utility script to aid
     data collection, not for gear importing. It *is* a possibility in the future. But, it is a
@@ -48,11 +48,11 @@ def extract_info_box(img: cv2.Mat, template: cv2.Mat) -> ...:
     """
     # Template matching
     logger.info("Searching for info box.")
-    h, w = template.shape[:2]  # Allow use of RGB template
+    template_h, template_y = template.shape[:2]  # Allow use of RGB template
     _, _, _, max_loc = template_match(img, template)
 
     top_left = max_loc
-    bottom_right = (top_left[0] + w, top_left[1] + h)
+    bottom_right = (top_left[0] + template_y, top_left[1] + template_h)
     logger.debug(f"Match found with bounding box {top_left} -> {bottom_right}.")
 
     # Cropping out the info box to reduce noise
@@ -82,50 +82,55 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
     logger.info("Extracting gear star.")
 
     # Thresholding to (hopefully) improve contrast
-    t_info_box = cv2.cvtColor(info_box, cv2.COLOR_BGR2GRAY)
-    _, t_info_box = cv2.threshold(t_info_box, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    _, t_info_box = cv2.threshold(
+        cv2.cvtColor(info_box, cv2.COLOR_BGR2GRAY), 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU
+    )
 
-    # Match against the 6 star templates and store the score and matching region
-    scores = {}
-    matches = {}
+    # Match against the 6-star templates and store the score and matching region
+    match = {}
     for star_count, template in star_templates.items():
-        h, w = template.shape[:2]
-        t_template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
-        _, t_template = cv2.threshold(t_template, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+        template_h, template_w = template.shape[:2]
 
-        _, max_val, _, max_loc = template_match(t_info_box, t_template)
-        scores[star_count] = max_val
+        _, thresh_template = cv2.threshold(
+            cv2.cvtColor(template, cv2.COLOR_BGR2GRAY), 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU
+        )
+
+        _, max_val, _, max_loc = template_match(t_info_box, thresh_template)
         logger.debug(f"Template for {star_count}* scored {max_val * 100 :05.4f}%.")
 
-        match_region = crop(info_box, max_loc, (max_loc[0] + w, max_loc[1] + h))
-        matches[star_count] = match_region
+        match_region = crop(info_box, max_loc, (max_loc[0] + template_w, max_loc[1] + template_h))
+        match[star_count] = {"score": max_val, "region": match_region}
 
-    star_order = list(sorted(scores.keys(), key=scores.get, reverse=True))  # Max first
+    # Sort max first
+    star_order = list(sorted(match, key=lambda x: x[0], reverse=True))  # type: ignore
 
     # Resolve ambiguity between 5* and 6* should that arise
-    if star_order[:2] in ([5, 6], [6, 5]) and (delta := abs(scores[5] - scores[6])) < AMBIGUITY_THRESHOLD:
+    if set(star_order[:2]) == {5, 6} and (delta := abs(match[5]["score"] - match[6]["score"])) < AMBIGUITY_THRESHOLD:
         logger.debug(f"Gear star is ambiguous between 5* and 6* with delta {delta * 100 :05.4f}%. Resolving.")
+        return resolve_5_6_ambiguity(match_region_6_star=match[6]["region"])
 
-        lab_match_region_6 = cv2.cvtColor(matches[6], cv2.COLOR_BGR2LAB)
-        lab_known_6 = cv2.cvtColor(np.full_like(lab_match_region_6, PURPLE_RARITY_STAR), cv2.COLOR_BGR2LAB)
+    detected_star = star_order[0]
+    logger.info(f"Gear star detect as {detected_star}* (confidence {match[detected_star]['score'] * 100 :05.4f}%)")
+    return detected_star
 
-        logger.debug(f"Calculating delta between match region and known 6* color {PURPLE_RARITY_STAR}.")
-        match_x, match_y = np.where(skimage.color.deltaE_ciede2000(lab_match_region_6, lab_known_6, kL=2) < 5)
 
-        match_pixel_count = len(tuple(zip(match_x, match_y)))
-        logger.debug(f"Match region has {match_pixel_count}/{CIEDE_PIXEL_THRESHOLD} pixels matching known 6* color.")
-        if match_pixel_count > CIEDE_PIXEL_THRESHOLD:  # Arbitrary threshold, but should be enough to have confidence
-            star = 6
-            logger.info(f"Gear star detect as {star}*")
-        else:
-            star = 5
-            logger.info(f"Gear star detect as {star}*")
+def resolve_5_6_ambiguity(match_region_6_star: cv2.Mat) -> int:
+    """Resolve 5-star 6-star ambiguity"""
+    lab_match_region_6 = cv2.cvtColor(match_region_6_star, cv2.COLOR_BGR2LAB)
+    lab_known_6 = cv2.cvtColor(np.full_like(lab_match_region_6, PURPLE_RARITY_STAR), cv2.COLOR_BGR2LAB)
 
-    else:
-        star = star_order[0]
-        logger.info(f"Gear star detect as {star}* (confidence {scores[star] * 100 :05.4f}%)")
+    logger.debug(f"Calculating delta between match region and known 6* color {PURPLE_RARITY_STAR}.")
+    match_x, match_y = np.where(skimage.color.deltaE_ciede2000(lab_match_region_6, lab_known_6, kL=2) < 5)
 
-    return star
+    match_pixel_count = len(tuple(zip(match_x, match_y)))
+    logger.debug(f"Match region has {match_pixel_count}/{CIEDE_PIXEL_THRESHOLD} pixels matching known 6* color.")
+
+    if match_pixel_count > CIEDE_PIXEL_THRESHOLD:  # Arbitrary threshold, but should be enough to have confidence
+        logger.info("Gear star detect as 6*")
+        return 6
+
+    logger.info("Gear star detect as 5*")
+    return 5
 
 
 def extract_sub_stat_rarity(info_box: cv2.Mat) -> tuple[str, dict[int, str]]:
@@ -134,13 +139,13 @@ def extract_sub_stat_rarity(info_box: cv2.Mat) -> tuple[str, dict[int, str]]:
 
     This also extract gear's rarity thanks to the sub stat count-gear rarity correlation.
     """
-    logger.info("Extracting substat rarity.")
+    logger.info("Extracting sub stat rarity.")
 
     result = {}
-    for i, sub_stat in enumerate(("SUBSTAT_1", "SUBSTAT_2", "SUBSTAT_3", "SUBSTAT_4")):
-        # Extract color of pixel
-        x, y = map(int, os.environ.get(sub_stat).split(","))
-        base_rgb = color.get_rgb(info_box, x, y)
+    for i, sub_stat in enumerate(("SUB_STAT_1", "SUB_STAT_2", "SUB_STAT_3", "SUB_STAT_4")):
+        # Extract color of pixel, type-check ignored since we verified in toolkit's __init__.py already
+        coord_x, coord_y = map(int, os.environ.get(sub_stat).split(","))  # type: ignore
+        base_rgb = color.get_rgb(info_box, coord_x, coord_y)
         logger.debug(f"Color of {sub_stat} is {base_rgb}.")
 
         # Loop over rarity color and calculate distance
@@ -151,7 +156,7 @@ def extract_sub_stat_rarity(info_box: cv2.Mat) -> tuple[str, dict[int, str]]:
             logger.debug(f"Delta-E to {rarity}-rarity {target_rgb} is {distance :05.4f}.")
 
         # Get rarity. CIEDE2000 should guarantee the closest color is the correct one.
-        rarity = min(scores.keys(), key=scores.get)
+        rarity = min(scores, key=scores.get)  # type: ignore
 
         if rarity == "White":
             logger.debug("White sub stat detected. Discarding")

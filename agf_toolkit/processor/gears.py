@@ -48,14 +48,14 @@ RARITY_GRADE_MAPPING = {
 }
 
 
-def _reverse_dict(d: dict) -> dict:
-    return {v: k for k, v in d.items()}
+def _reverse_dict(input_dict: dict) -> dict:
+    return {v: k for k, v in input_dict.items()}
 
 
 @dataclass
 class Stat:
     """
-    Stat class for gear substats.
+    Stat class for gear sub stats.
 
     Attributes
     ----------
@@ -79,6 +79,7 @@ class Stat:
         )
 
     def as_dict(self):
+        """Return a dict representing the stat"""
         return {
             "stat_type": self.stat_type,
             "value": self.value,
@@ -87,6 +88,7 @@ class Stat:
 
     @classmethod
     def parse(cls, stat_type, value, rarity):
+        """Parse comma-separated stats into a Stat object"""
         return cls(
             stat_type=_reverse_dict(STAT_TYPE_MAPPING)[int(stat_type)],
             value=value,
@@ -105,8 +107,8 @@ class Gear:
     gear_type   : str           = Type of gear.
     rarity      : str           = Rarity of gear.
     star        : int           = Star count of gear.
-    mainstat    : Stat          = Main stat of gear.
-    substats    : list[Stat]    = Sub stats of gear.
+    main_stat   : Stat          = Main stat of gear.
+    sub_stats   : list[Stat]    = Sub stats of gear.
     """
 
     gear_set: str
@@ -123,8 +125,8 @@ class Gear:
             f"type={self.gear_type}, "
             f"rarity={self.rarity}, "
             f"star={self.star}, "
-            f"mainstat={self.mainstat}, "
-            f"substats={self.substats})"
+            f"main_stat={self.main_stat}, "
+            f"sub_stats={self.sub_stats})"
         )
 
     def __str__(self):
@@ -138,6 +140,7 @@ class Gear:
         )
 
     def as_dict(self):
+        """Return a dict representing the gear"""
         return {
             "set": self.gear_set,
             "type": self.gear_type,

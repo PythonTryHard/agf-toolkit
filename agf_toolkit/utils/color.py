@@ -1,17 +1,26 @@
+from typing import TypeAlias
+
 import cv2
 import numpy as np
 from skimage import color
 
 # Type hints for dealing with OpenCV's BGR magic
-R = G = B = int
+R: TypeAlias = int
+G: TypeAlias = int
+B: TypeAlias = int
 
 
-def get_rgb(bgr_image: cv2.Mat, x: int, y: int) -> tuple[R, G, B]:
-    """Get RGB color at coordinate (x,y) of a BGR image."""
-    return tuple(bgr_image[y, x])[::-1]  # Coordinate is flipped when dealing with numpy array
+def get_rgb(bgr_image: cv2.Mat, coord_x: int, coord_y: int) -> tuple[R, G, B]:
+    """
+    Get RGB color at coordinate (x,y) of a BGR image.
+
+    mypy will complain about typing but since this should only be used in a well-known way, we
+    can ignore it.
+    """
+    return tuple(bgr_image[coord_y, coord_x])[::-1]  # type: ignore
 
 
-def color_distance(base: tuple[R, G, B], target: tuple[R, G, B]):
+def color_distance(base: tuple[R, G, B], target: tuple[R, G, B]) -> float:
     """
     Calculate the distance between base and target colour based on CIEDE2000 method.
 

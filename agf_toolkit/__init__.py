@@ -1,4 +1,3 @@
-__name__ = "agf_toolkit"
 __description__ = "A toolkit for Artery Gear: Fusion"
 __version__ = "0.0.1"
 __author__ = "PythonTryHard - Arisu#9695 (<@!263986827214585857>)"
@@ -13,8 +12,8 @@ from loguru import logger
 load_dotenv()
 
 
-def _verify_substat_env_var(name: str) -> bool:
-    return name in os.environ and re.match(r"^\d+,\d+", os.environ[name])
+def _verify_sub_stat_env_var(name: str) -> bool:
+    return name in os.environ and bool(re.match(r"^\d+,\d+", os.environ[name]))
 
 
 logger.remove()
@@ -33,13 +32,13 @@ logger.debug("Logging 'DEBUG' messages too.")
 logger.info("Verifying environment variables.")
 if not all(
     [
-        _verify_substat_env_var("SUBSTAT_1"),
-        _verify_substat_env_var("SUBSTAT_2"),
-        _verify_substat_env_var("SUBSTAT_3"),
-        _verify_substat_env_var("SUBSTAT_4"),
+        _verify_sub_stat_env_var("SUB_STAT_1"),
+        _verify_sub_stat_env_var("SUB_STAT_2"),
+        _verify_sub_stat_env_var("SUB_STAT_3"),
+        _verify_sub_stat_env_var("SUB_STAT_4"),
     ]
 ):
-    logger.error("Missing/Malformed substat coordinate settings! Check your .env file! Exiting...")
+    logger.error("Missing/Malformed sub stat coordinate settings! Check your .env file! Exiting...")
     if __name__ == "__main__":
         sys.exit(1)
 
