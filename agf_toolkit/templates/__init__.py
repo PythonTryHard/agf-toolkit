@@ -1,3 +1,4 @@
+import logging
 import sys
 from importlib import resources
 from types import NoneType
@@ -6,6 +7,8 @@ import cv2
 from loguru import logger
 
 __all__ = ["INFO_BOX", "STARS"]
+
+logging.getLogger(cv2.__name__).setLevel(logging.CRITICAL)
 
 INFO_BOX = cv2.imread(str(resources.path("agf_toolkit.templates", "info_box.png")))
 STARS = {
@@ -18,8 +21,8 @@ STARS = {
 }
 
 if any(isinstance(i, NoneType) for i in [INFO_BOX, *STARS.values()]):
-    logger.error(
+    logger.critical(
         "Failed to load templates! "
-        "Please verify that all templates are present in the 'templates' directory as instructed!"
+        "Please verify that ALL templates are present in the 'templates' directory as instructed!"
     )
     sys.exit(1)

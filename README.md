@@ -71,10 +71,10 @@ And no, **DO NOT** use the sample stuffs included.
 ### Gear info box
 I recommend using a screenshot of the info box from Target Elimination mode. Finish a run, and tap on the gear icon on the top right of the screen. This will bring up the info box.
 
-After that, take a screenshot and crop out the info box as tightly as possible without clipping in. Using any software, clean up the box as much as possible. You don't need to be precise with this. For an example, see the [sample info box](https://github.com/PythonTryHard/agf-toolkit/blob/master/agf_toolkit/templates_sample/info_box.png).
+After that, take a screenshot and crop out the info box as tightly as possible without clipping in. Using any software, clean up the box as much as possible. You don't need to be precise with this. For an example, see the [sample info box](https://github.com/PythonTryHard/agf-toolkit/blob/master/templates_sample/info_box.png).
 
 ### Gear star
-Again, info box screenshot, this time you crop out the stars. Make sure to not use the ones with equipment icon clipping in. For an example, see the [sample 6-star](https://github.com/PythonTryHard/agf-toolkit/blob/master/agf_toolkit/templates_sample/6.png)
+Again, info box screenshot, this time you crop out the stars. Make sure to not use the ones with equipment icon clipping in. For an example, see the [sample 6-star](https://github.com/PythonTryHard/agf-toolkit/blob/master/templates_sample/6.png)
 
 ## Note: This repository is...
 ### Not feature-complete.
