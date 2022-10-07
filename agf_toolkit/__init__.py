@@ -38,8 +38,7 @@ if not all(
         _verify_sub_stat_env_var("SUB_STAT_4"),
     ]
 ):
-    logger.error("Missing/Malformed sub stat coordinate settings! Check your .env file! Exiting...")
-    if __name__ == "__main__":
-        sys.exit(1)
+    logger.critical("Missing/Malformed sub stat coordinate settings! Check your .env file! Exiting...")
+    sys.exit(1)
 
 logger.info("Loading libraries, this may take a while!")
