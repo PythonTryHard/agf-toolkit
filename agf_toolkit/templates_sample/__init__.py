@@ -22,5 +22,4 @@ if any(isinstance(i, NoneType) for i in [INFO_BOX, *STARS.values()]):
         "Failed to load templates! "
         "Please verify that all templates are present in the 'templates' directory as instructed!"
     )
-    if __name__ == "__main__":
-        sys.exit(1)
+    sys.exit(1)
