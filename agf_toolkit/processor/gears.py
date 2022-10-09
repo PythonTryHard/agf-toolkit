@@ -19,7 +19,7 @@ STAT_TYPE_MAPPING = {
     "HP (%)": 5,
     "SPD": 6,
     "Critical": 7,
-    "CRT DMG": 8,
+    "CRIT DMG": 8,
     "Status ACC": 9,
     "Status RES": 10,
 }
@@ -28,7 +28,7 @@ SET_NAME_MAPPING = {
     "ATK set": 0,
     "Counter Engine set": 1,
     "Critical set": 2,
-    "Critical Crit DMG set": 3,
+    "Critical DMG set": 3,
     "DEF set": 4,
     "HP set": 5,
     "Lifesteal set": 6,
