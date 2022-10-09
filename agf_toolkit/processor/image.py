@@ -106,7 +106,7 @@ def extract_gear_star(
         match[star_count] = {"score": max_val, "region": match_region}
 
     # Sort max first
-    star_order = list(sorted(match, key=lambda x: x[0], reverse=True))  # type: ignore
+    star_order = list(sorted(match, key=lambda x: match[x]["score"], reverse=True))  # type: ignore
 
     # Resolve ambiguity between 5* and 6* should that arise
     if set(star_order[:2]) == {5, 6} and (delta := abs(match[5]["score"] - match[6]["score"])) < AMBIGUITY_THRESHOLD:
