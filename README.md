@@ -35,12 +35,8 @@ The toolkit is configured via a `.env` file. The (boiled down) example configura
 ```sh
 DEBUG=""
 
-ADB_IP="127.0.0.1"
-ADB_PORT="5037"
-
-CONNECTION_TYPE="USB"
-# IDENTIFIER=""
-# PORT=""
+IDENTIFIER=""
+PORT=""
 
 SUB_STAT_1="0,0"
 SUB_STAT_2="0,0"
@@ -48,10 +44,6 @@ SUB_STAT_3="0,0"
 SUB_STAT_4="0,0"
 ```
 - `DEBUG` when set to anything other than `""` will enable debug logging.
-- `ADB_IP` and `ADB_PORT` is for connecting to the local ADB server. Most of the time, you won't need to touch this.
-- `CONNECTION_TYPE` is for how you are connecting to your Android device that subsequently dictates what you need to set for the toolkit to communicate with your device.
-  - `USB` is for connecting to your Android device via physical USB cable (**not emulator!**).
-  - `IP` is for connecting to your Android device via network. **If you're using an emulator**, most likely you'll need this.
 - `IDENTIFIER` is for the serial number of your Android device. You can find this by running `adb devices` in your terminal. If you're connecting via `IP`, this is the IP address of your Android device.
 - `PORT` is the debugging port of your Android device. This is ignored when connecting via `USB`. 
 - `SUB_STAT_1` to `4` is the coordinate that the program use to detect gears' sub stat's rarity. For more detail, see [Template preparation/Gear info box](#gear-info-box).
