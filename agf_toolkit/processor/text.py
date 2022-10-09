@@ -1,6 +1,6 @@
 import re
 
-import cv2
+import numpy as np
 from loguru import logger
 from paddleocr import PaddleOCR
 
@@ -15,7 +15,7 @@ logger.info("Loading OCR model.")
 OCR = PaddleOCR(use_angle_cls=False, lang="en", show_log=False)
 
 
-def extract_text(image: cv2.Mat) -> str:
+def extract_text(image: np.ndarray[int, np.dtype[np.generic]]) -> str:
     """Extract text from gear info box. At least it's more accurate than Tesseract"""
     logger.info("Starting OCR on gear info.")
     result = " ".join(i[-1][0] for i in OCR.ocr(image, cls=False))

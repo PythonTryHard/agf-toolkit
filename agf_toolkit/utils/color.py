@@ -10,7 +10,7 @@ G: TypeAlias = int
 B: TypeAlias = int
 
 
-def get_rgb(bgr_image: cv2.Mat, coord_x: int, coord_y: int) -> tuple[R, G, B]:
+def get_rgb(bgr_image: np.ndarray[int, np.dtype[np.generic]], coord_x: int, coord_y: int) -> tuple[R, G, B]:
     """
     Get RGB color at coordinate (x,y) of a BGR image.
 

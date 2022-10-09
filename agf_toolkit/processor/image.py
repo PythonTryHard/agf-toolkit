@@ -32,7 +32,9 @@ def crop(img, top_left, bottom_right):
     return cropped
 
 
-def extract_info_box(img: cv2.Mat, template: cv2.Mat) -> cv2.Mat:
+def extract_info_box(
+    img: np.ndarray[int, np.dtype[np.generic]], template: np.ndarray[int, np.dtype[np.generic]]
+) -> np.ndarray[int, np.dtype[np.generic]]:
     """
     Get the info box from the screenshot.
 
@@ -61,7 +63,9 @@ def extract_info_box(img: cv2.Mat, template: cv2.Mat) -> cv2.Mat:
     return info_box
 
 
-def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> int:
+def extract_gear_star(
+    info_box: np.ndarray[int, np.dtype[np.generic]], star_templates: dict[int, np.ndarray[int, np.dtype[np.generic]]]
+) -> int:
     """
     Get the gear star from the screenshot.
 
@@ -114,7 +118,7 @@ def extract_gear_star(info_box: cv2.Mat, star_templates: dict[int, cv2.Mat]) -> 
     return detected_star
 
 
-def resolve_5_6_ambiguity(match_region_6_star: cv2.Mat) -> int:
+def resolve_5_6_ambiguity(match_region_6_star: np.ndarray[int, np.dtype[np.generic]]) -> int:
     """Resolve 5-star 6-star ambiguity"""
     lab_match_region_6 = cv2.cvtColor(match_region_6_star, cv2.COLOR_BGR2LAB)
     lab_known_6 = cv2.cvtColor(np.full_like(lab_match_region_6, PURPLE_RARITY_STAR), cv2.COLOR_BGR2LAB)
@@ -133,7 +137,7 @@ def resolve_5_6_ambiguity(match_region_6_star: cv2.Mat) -> int:
     return 5
 
 
-def extract_sub_stat_rarity(info_box: cv2.Mat) -> tuple[str, dict[int, str]]:
+def extract_sub_stat_rarity(info_box: np.ndarray[int, np.dtype[np.generic]]) -> tuple[str, dict[int, str]]:
     """
     Extract sub stats' rarity via pixel-checking.
 
