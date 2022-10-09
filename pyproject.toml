@@ -13,20 +13,22 @@ opencv-python = "^4.6.0.66"
 paddleocr = "^2.6.0"
 mitmproxy = "^8.1.1"
 python-dotenv = "^0.21.0"
-pure-python-adb = "^0.3.0.dev0"
 loguru = "^0.6.0"
 paddlepaddle = "^2.3.2"
 pyzmq = "^24.0.1"
 scikit-image = "^0.19.3"
 numpy = "^1.23.3"
+requests = "^2.28.1"
+tqdm = "^4.64.1"
+adbutils = "^1.0.8"
 
 [tool.poetry.group.dev.dependencies]
-ipykernel = "^6.15.3"
 black = "^22.8.0"
 pre-commit = "^2.20.0"
 isort = "^5.10.1"
 mypy = "^0.981"
 pylint = "^2.15.3"
+types-requests = "^2.28.11.2"
 
 [tool.black]
 line-length=120
@@ -63,6 +65,14 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "ppadb.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "adbutils.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tqdm.*"
 ignore_missing_imports = true
 
 [build-system]

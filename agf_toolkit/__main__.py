@@ -7,17 +7,13 @@ from agf_toolkit import templates
 from agf_toolkit.processor import gears, image, text
 from agf_toolkit.utils import adb
 
-# Initialise ADB connection
-ADB = adb.get_adb_client()
-DEVICE = adb.get_device(ADB)
-
 # Enter infinite loop
 try:
     while True:
         input("Press Enter to capture screen...")
 
         # Grab screenshot and pre-process
-        scrsht = adb.screencap(DEVICE)
+        scrsht = adb.screencap()
         info_image = image.extract_info_box(scrsht, templates.INFO_BOX)
         info_text = text.extract_text(info_image)  # pylint: disable=invalid-name
 

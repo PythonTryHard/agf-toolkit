@@ -1,70 +1,111 @@
 import os
+import platform
+import shutil
+import subprocess
 import sys
-from io import BytesIO
+from pathlib import Path
+from zipfile import ZipFile
 
+import adbutils
 import cv2
 import numpy as np
+import requests
+from adbutils import adb
 from loguru import logger
-from ppadb.client import Client
-from ppadb.device import Device
+from tqdm import tqdm
 
 
-def get_adb_client() -> Client:
-    """Get an ADB client."""
-    ip = os.environ.get("ADB_IP")
-    port = int(os.environ.get("ADB_PORT"))
+def _monkeypatch_screenshot(self: adbutils.AdbDevice) -> np.ndarray[int, np.dtype[np.generic]]:
+    """
+    Monkey patch for adbutils.AdbDevice.screenshot()
 
-    logger.info(f"Attempting to connect to ADB server @ {ip}:{port}")
-    ADB_CLIENT = Client(host=ip, port=port)
+    Based on https://github.com/openatx/adbutils/pull/78, replacing PIL with cv2, and using 3.8+ syntax.
+    """
+    conn = self.shell(["screencap", "-p"], stream=True)
+    raw_png = b""
+    while chunk := conn.read(4096):
+        raw_png += chunk
 
-    try:
-        ADB_CLIENT.create_connection()
-    except RuntimeError as e:
-        if "Is adb running on your computer?" in e.args[0]:
-            logger.error(
-                f"Could not connect to local ADB @ {ip}:{port}! "
-                "Make sure ADB is running on your computer by running 'adb start-server' first!"
-            )
-            if __name__ == "__main__":
-                sys.exit(1)
-
-        else:
-            raise e
-
-    logger.info("Connected to ADB.")
-    return ADB_CLIENT
+    img = cv2.imdecode(np.frombuffer(raw_png, np.uint8), 1)
+    return img
 
 
-def get_device(client: Client) -> Device:
-    """Attempt to connect to the device running Artery Gear: Fusion."""
-    logger.info("Attempting to connect to device.")
-    match os.environ.get("CONNECTION_TYPE").lower():
-        case "usb":
-            if (device := client.device(os.environ.get("IDENTIFIER"))) is not None:
-                logger.info("Connected to device.")
-                return device
+adbutils.AdbDevice.screenshot = _monkeypatch_screenshot
 
-        case "ip":
-            ip, port = os.environ.get("IDENTIFIER"), int(os.environ.get("PORT"))
-            if client.remote_connect(host=ip, port=port):
-                device = list(filter(lambda x: x.serial == f"{ip}:{port}", client.devices()))[0]
-                logger.info("Connected to device.")
-                return device
 
+ADB_DOWNLOAD_PATH = Path("~/.agf_toolkit").expanduser()
+ADB_DOWNLOAD_FNAME = ADB_DOWNLOAD_PATH / "platform-tools.zip"
+ADB_DOWNLOAD_EXECUTABLE = ADB_DOWNLOAD_PATH / "platform-tools" / "adb"
+
+ADB = shutil.which("adb") or ADB_DOWNLOAD_EXECUTABLE
+
+if not os.path.exists(ADB):
+    logger.info("ADB not found. Downloading...")
+
+    match platform.system():
+        case "Windows":
+            ADB_URL = "https://dl.google.com/android/repository/platform-tools-latest-windows.zip"
+        case "Linux":
+            ADB_URL = "https://dl.google.com/android/repository/platform-tools-latest-linux.zip"
+        case "Darwin":
+            ADB_URL = "https://dl.google.com/android/repository/platform-tools-latest-darwin.zip"
         case _:
-            logger.error("Invalid connection type specified in .env!")
+            logger.critical("Unsupported platform! Please install adb manually!")
             sys.exit(1)
 
-    # Since all code paths either return or exit, this should be reached when device is not found.
-    logger.error("Could not find/connect to device! Please check your '.env' file and try again!")
-    if __name__ == "__main__":
+    if not ADB_DOWNLOAD_PATH.exists():
+        os.mkdir(ADB_DOWNLOAD_PATH)
+
+    resp = requests.get(ADB_URL, stream=True, timeout=15.0)
+    total = int(resp.headers.get("content-length", 0))
+    with open(ADB_DOWNLOAD_FNAME, "wb") as file, tqdm(
+        desc=ADB_DOWNLOAD_FNAME.name,
+        total=total,
+        unit="iB",
+        unit_scale=True,
+        unit_divisor=1024,
+    ) as bar:
+        for data in resp.iter_content(chunk_size=1024):
+            size = file.write(data)
+            bar.update(size)
+
+    logger.info(f"Extracting ADB to {ADB_DOWNLOAD_PATH}")
+    with ZipFile(ADB_DOWNLOAD_FNAME) as zf:
+        zf.extractall(ADB_DOWNLOAD_PATH)
+
+    os.remove(ADB_DOWNLOAD_FNAME)
+
+logger.info("Starting ADB server...")
+subprocess.run([ADB, "start-server"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+# Connect to device over network if needed
+if all([ip := os.environ.get("IP"), port := os.environ.get("PORT")]):  # Dirty null check
+    logger.info("Connecting to device over network.")
+    try:
+        adb.connect(f"{ip}:{port}", timeout=5.0)  # Should be more than enough
+    except adbutils.errors.AdbTimeout:
+        logger.critical("Timeout! Failed to connect to device over network!")
         sys.exit(1)
 
+match len(device_list := adb.device_list()):
+    case 0:
+        logger.critical("No devices found!")
+        sys.exit(1)
+    case 1:
+        DEVICE = device_list[0]
+    case _:
+        print("Select your device: ")
+        for i, d in enumerate(device_list):
+            print(f"{i :<2}: {d.serial}")
 
-def screencap(device: Device) -> cv2.Mat:
-    """Take a screenshot and convert to OpenCV-compatible."""
+        print("(Enter a number (1 - {len(device_list)})): ", end="")
+        while not ((choice := input()).isnumeric() and int(choice) in range(1, len(device_list) + 1)):
+            print("Invalid input! Please try again: ", end="")
+
+        DEVICE = device_list[int(choice) - 1]
+
+
+def screencap() -> np.ndarray[int, np.dtype[np.generic]]:
+    """Take a screenshot from the connected device."""
     logger.info("Taking screenshot.")
-    raw_byte = BytesIO(device.screencap())  # PNG
-    logger.info("Screenshot received. Converting to OpenCV BGR image.")
-    img = cv2.imdecode(np.frombuffer(raw_byte.read(), np.uint8), 1)
-    return img
+    return DEVICE.screenshot()
