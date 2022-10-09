@@ -6,7 +6,7 @@ from paddleocr import PaddleOCR
 
 from agf_toolkit.processor import gears
 
-STAT_REGEX = f"({'|'.join(re.escape(i) for i in gears.STAT_TYPE_MAPPING)})"
+STAT_REGEX = f"({'|'.join(i.pattern for i in gears.STAT_TYPE_REGEX_MAPPING)})"
 MAIN_STAT_REGEX = STAT_REGEX + r"\s*?\s*?(\d+?(\.\d+?)?%?)\s"
 SUB_STAT_REGEX = STAT_REGEX + r"\s*?[\(\[\{]Locked[\)\]\}]\s*?(\d+?(\.\d+?)?%?)\s"
 
@@ -59,6 +59,6 @@ def extract_main_stat(ocr_string: str) -> gears.Stat:
 
 def extract_sub_stats(ocr_string: str) -> list[tuple[str, str]]:
     """Extract gear sub stats from the OCR-ed string."""
-    sub_stats = [i[:2] for i in re.findall(SUB_STAT_REGEX, ocr_string)]
+    sub_stats = [(gears.parse_sub_stat_type(i[0]), i[1]) for i in re.findall(SUB_STAT_REGEX, ocr_string)]
     logger.info(f"Sub stats detected as: {sub_stats}")
     return sub_stats

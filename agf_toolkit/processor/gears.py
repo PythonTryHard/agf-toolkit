@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from typing import Union
 
@@ -8,6 +9,20 @@ GEAR_TYPE_MAPPING = {
     "Propulsion System": 3,
     "Aiming Component": 4,
     "Amplifier Component": 5,
+}
+
+STAT_TYPE_REGEX_MAPPING = {
+    re.compile(r"ATK"): "ATK",
+    re.compile(r"DEF"): "DEF",
+    re.compile(r"HP"): "HP",
+    re.compile(r"ATK\s*?\(%\)"): "ATK (%)",
+    re.compile(r"DEF\s*?\(%\)"): "DEF (%)",
+    re.compile(r"HP\s*?\(%\)"): "HP (%)",
+    re.compile(r"SP"): "SPD",
+    re.compile(r"Critical"): "Critical",
+    re.compile(r"CRIT\s*?DMG"): "CRIT DMG",
+    re.compile(r"Status\s*?ACC"): "Status ACC",
+    re.compile(r"Status\s*?RES"): "Status RES",
 }
 
 STAT_TYPE_MAPPING = {
@@ -50,6 +65,16 @@ RARITY_GRADE_MAPPING = {
 
 def _reverse_dict(input_dict: dict) -> dict:
     return {v: k for k, v in input_dict.items()}
+
+
+def parse_sub_stat_type(sub_stat_regex_result: str) -> str:
+    """Attempt to parse the sub stat type from the regex result."""
+    for pattern, true_value in STAT_TYPE_REGEX_MAPPING.items():
+        if pattern.match(sub_stat_regex_result):
+            return true_value
+
+    # Code shouldn't reach here!
+    raise ValueError(f"Regex parsing failed on: {sub_stat_regex_result}! Please open an issue on GitHub!")
 
 
 @dataclass
