@@ -10,7 +10,7 @@ packages = [{include = "agf_toolkit"}]
 [tool.poetry.dependencies]
 python = "^3.10, <3.12"
 opencv-python = "^4.6.0.66"
-paddleocr = "^2.6.0"
+paddleocr = "^2.6.1"
 mitmproxy = "^8.1.1"
 python-dotenv = "^0.21.0"
 loguru = "^0.6.0"
