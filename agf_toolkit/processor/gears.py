@@ -1,109 +1,54 @@
-import re
-from dataclasses import dataclass
-from typing import Union
+from typing import Any, Collection, Optional, Union
 
-GEAR_TYPE_MAPPING = {
-    "Weapon System": 0,
-    "Power System": 1,
-    "Shield System": 2,
-    "Propulsion System": 3,
-    "Aiming Component": 4,
-    "Amplifier Component": 5,
-}
-
-STAT_TYPE_REGEX_MAPPING = {
-    re.compile(r"ATK"): "ATK",
-    re.compile(r"DEF"): "DEF",
-    re.compile(r"HP"): "HP",
-    re.compile(r"ATK\s*?\(%\)"): "ATK (%)",
-    re.compile(r"DEF\s*?\(%\)"): "DEF (%)",
-    re.compile(r"HP\s*?\(%\)"): "HP (%)",
-    re.compile(r"SP"): "SPD",
-    re.compile(r"Critical"): "Critical",
-    re.compile(r"CRIT\s*?DMG"): "CRIT DMG",
-    re.compile(r"Status\s*?ACC"): "Status ACC",
-    re.compile(r"Status\s*?RES"): "Status RES",
-}
-
-STAT_TYPE_MAPPING = {
-    "ATK": 0,
-    "DEF": 1,
-    "HP": 2,
-    "ATK (%)": 3,
-    "DEF (%)": 4,
-    "HP (%)": 5,
-    "SPD": 6,
-    "Critical": 7,
-    "CRIT DMG": 8,
-    "Status ACC": 9,
-    "Status RES": 10,
-}
-
-SET_NAME_MAPPING = {
-    "ATK set": 0,
-    "Counter Engine set": 1,
-    "Critical set": 2,
-    "Critical DMG set": 3,
-    "DEF set": 4,
-    "HP set": 5,
-    "Lifesteal set": 6,
-    "Immunity set": 7,
-    "Riposte set": 8,
-    "SPD set": 9,
-    "Status ACC set": 10,
-    "Status Resistance set": 11,
-}
-
-RARITY_GRADE_MAPPING = {
-    "Yellow": 0,
-    "Purple": 1,
-    "Blue": 2,
-    "Green": 3,
-    "White": 4,
-}
+from agf_toolkit.processor.constants import (
+    GEAR_TYPE_MAPPING,
+    RARITY_GRADE_MAPPING,
+    SET_NAME_MAPPING,
+    STAT_TYPE_MAPPING,
+)
 
 
 def _reverse_dict(input_dict: dict) -> dict:
     return {v: k for k, v in input_dict.items()}
 
 
-def parse_sub_stat_type(sub_stat_regex_result: str) -> str:
-    """Attempt to parse the sub stat type from the regex result."""
-    for pattern, true_value in STAT_TYPE_REGEX_MAPPING.items():
-        if pattern.match(sub_stat_regex_result):
-            return true_value
-
-    # Code shouldn't reach here!
-    raise ValueError(f"Regex parsing failed on: {sub_stat_regex_result}! Please open an issue on GitHub!")
+def _null_safe_encode(
+    value: Any, null_values: Optional[Collection[Any]] = None, null_representation: Any = "-1"
+) -> Any:
+    if not null_values:
+        null_values = []
+    return null_representation if value in [*null_values, None] else value
 
 
-@dataclass
+def _null_safe_decode(value: Any, null_indicator: Any = "-1", null_value: Any = None) -> Any:
+    return value if value != null_indicator else null_value
+
+
 class Stat:
     """
-    Stat class for gear sub stats.
+    Represent a gear's stat (singular).
 
-    Attributes
-    ----------
-    stat_type   : str               = Type of stat.
-    value       : str               = Value of stat. May contain "%" if gear type is percentage.
-    rarity      : Union[str, None]  = Rarity of stat. None if not applicable (i.e. main stat).
+    Unless absolutely necessary, this class should not be instantiated manually.
+    Nevertheless, there is one way to create a Stat instance:
+        1. Manually supplying the value as required by the constructor i.e., `Stat("HP", "20%", "Yellow")`
+
+    The rationale is as this is meant to be used only as intermediate to add to a Gear instance, supporting decoding
+    from comma-separated string is redundant; plus, decoding in a gear object most likely needs to split the string
+    fully by commas rather than splitting 3 times, then skip ahead, split, skip ahead, split.
     """
 
-    stat_type: str
-    value: str
-    rarity: Union[str, None]
+    def __init__(self, stat_type: Union[str, None], value: Union[str, None], rarity: Union[str, None]) -> None:
+        self.stat_type = stat_type
+        self.value = value
+        self.rarity = rarity
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Stat(type={self.stat_type}, value={self.value}, rarity={self.rarity})"
 
-    def __str__(self):
-        return (
-            f"{STAT_TYPE_MAPPING[self.stat_type]},"
-            f"{self.value},"
-            f"{-1 if self.rarity is None else RARITY_GRADE_MAPPING[self.rarity]}"
-        )
+    def __str__(self) -> str:
+        return self.encode()
 
-    def as_dict(self):
+    def as_dict(self) -> dict:
         """Return a dict representing the stat"""
         return {
             "stat_type": self.stat_type,
@@ -111,39 +56,54 @@ class Stat:
             "rarity": self.rarity,
         }
 
+    def encode(self) -> str:
+        """Encode the stat into a comma-separated string"""
+        return (
+            f"{_null_safe_encode(STAT_TYPE_MAPPING.get(self.stat_type))},"
+            f"{_null_safe_encode(self.value)},"
+            f"{_null_safe_encode(RARITY_GRADE_MAPPING.get(self.rarity))}"
+        )
+
     @classmethod
-    def parse(cls, stat_type, value, rarity):
+    def decode(cls, stat_type, value, rarity):
         """Parse comma-separated stats into a Stat object"""
         return cls(
-            stat_type=_reverse_dict(STAT_TYPE_MAPPING)[int(stat_type)],
-            value=value,
-            rarity=None if int(rarity) == -1 else _reverse_dict(RARITY_GRADE_MAPPING)[int(rarity)],
+            stat_type=_reverse_dict(STAT_TYPE_MAPPING).get(_null_safe_decode(stat_type)),
+            value=_null_safe_decode(value),
+            rarity=_reverse_dict(RARITY_GRADE_MAPPING).get(_null_safe_decode(rarity)),
         )
 
 
-@dataclass
 class Gear:
     """
-    Gear class for gear info.
+    Represent a unit of equipment in the game.
 
-    Attributes
-    ----------
-    gear_set    : str           = Set of gear.
-    gear_type   : str           = Type of gear.
-    rarity      : str           = Rarity of gear.
-    star        : int           = Star count of gear.
-    main_stat   : Stat          = Main stat of gear.
-    sub_stats   : list[Stat]    = Sub stats of gear.
+    There are two ways to create a Gear object:
+        1. Pass a photo containing the gear info box into `parse_screenshot()` after instantiating.
+        2. Manually input the needed values when instantiating.
+
+    Note:
+        - Any supplied constructor data will get overwritten after calling `parse_screenshot()`.
     """
 
-    gear_set: str
-    gear_type: str
-    rarity: str
-    star: int
-    main_stat: Stat
-    sub_stats: list[Stat]
+    # pylint: disable=too-many-arguments
+    def __init__(
+        self,
+        gear_set: Union[str, None] = None,
+        gear_type: Union[str, None] = None,
+        rarity: Union[str, None] = None,
+        star: Union[int, None] = None,
+        main_stat: Union[Stat, None] = None,
+        sub_stats: Union[Collection[Stat], None] = None,
+    ) -> None:
+        self.gear_set = gear_set
+        self.gear_type = gear_type
+        self.rarity = rarity
+        self.star = star
+        self.main_stat = Stat(None, None, None) if main_stat is None else main_stat
+        self.sub_stats = [Stat(None, None, None)] if sub_stats is None else sub_stats
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             "Gear("
             f"set={self.gear_set}, "
@@ -154,17 +114,10 @@ class Gear:
             f"sub_stats={self.sub_stats})"
         )
 
-    def __str__(self):
-        return (
-            f"{SET_NAME_MAPPING[self.gear_set]},"
-            f"{GEAR_TYPE_MAPPING[self.gear_type]},"
-            f"{RARITY_GRADE_MAPPING[self.rarity]},"
-            f"{self.star},"
-            f"{self.main_stat},"
-            f"{','.join(str(i) for i in self.sub_stats)}"
-        )
+    def __str__(self) -> str:
+        return self.encode()
 
-    def as_dict(self):
+    def as_dict(self) -> dict:
         """Return a dict representing the gear"""
         return {
             "set": self.gear_set,
@@ -175,19 +128,44 @@ class Gear:
             "sub_stats": list(i.as_dict() for i in self.sub_stats),
         }
 
-    @classmethod
-    def parse_string(cls, gear_string: str):
-        """Parse a string into a Gear object."""
-        gear_set, gear_type, rarity, star, *stats = gear_string.split(",")
+    def encode(self) -> str:
+        """
+        Return a comma-separated compact representation of a gear.
 
-        main_stat = Stat.parse(*stats[:3])
-        sub_stats = [Stat.parse(*i) for i in [stats[i : i + 3] for i in range(3, len(stats), 3)]]  # Split to 3s
+        The encoding scheme is as follows:
+            `set_name,gear_type,rarity,star,(main_stat),*(sub_stats)`.
+        With:
+            - `(main_stat)` is always a 3-tuple of `type,value,rarity`.
+            - `(sub_stats)` is to be split exhaustively into 3-tuples: `type,value,rarity`.
+        Note:
+             - `None` is represented as `-1`.
+
+        """
+        return (
+            f"{_null_safe_encode(SET_NAME_MAPPING.get(self.gear_set))},"
+            f"{_null_safe_encode(GEAR_TYPE_MAPPING.get(self.gear_type))},"
+            f"{_null_safe_encode(RARITY_GRADE_MAPPING.get(self.rarity))},"
+            f"{self.star if self.star is not None and 0 < self.star <= 6 else -1},"
+            f"{self.main_stat},"
+            f"{','.join(str(i) for i in self.sub_stats)}"
+        )
+
+    @classmethod
+    def decode(cls, input_string: str):
+        """Decode a string and return a Gear instance."""
+        if len(split_input := input_string.split(",")) - 4 % 3 != 0:
+            raise ValueError("Invalid encoded string (number of components does not match expected length (3n + 4))")
+
+        gear_set, gear_type, rarity, star, *stats = split_input
+
+        main_stat = Stat.decode(*stats[:3])
+        sub_stats = [Stat.decode(*i) for i in [stats[i : i + 3] for i in range(3, len(stats), 3)]]  # Split to 3s
 
         return cls(
-            gear_set=_reverse_dict(SET_NAME_MAPPING)[int(gear_set)],
-            gear_type=_reverse_dict(GEAR_TYPE_MAPPING)[int(gear_type)],
-            rarity=_reverse_dict(RARITY_GRADE_MAPPING)[int(rarity)],
-            star=int(star),
+            gear_set=_reverse_dict(SET_NAME_MAPPING).get(_null_safe_decode(gear_set)),
+            gear_type=_reverse_dict(GEAR_TYPE_MAPPING).get(_null_safe_decode(gear_type)),
+            rarity=_reverse_dict(RARITY_GRADE_MAPPING).get(_null_safe_decode(rarity)),
+            star=int(star) if star.isdigit() else None,
             main_stat=main_stat,
             sub_stats=sub_stats,
         )
