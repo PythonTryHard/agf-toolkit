@@ -1,6 +1,7 @@
 import os
 import platform
 import shutil
+import stat
 import subprocess
 import sys
 from pathlib import Path
@@ -72,8 +73,11 @@ if not os.path.exists(ADB):
     logger.info(f"Extracting ADB to {ADB_DOWNLOAD_PATH}")
     with ZipFile(ADB_DOWNLOAD_FNAME) as zf:
         zf.extractall(ADB_DOWNLOAD_PATH)
+        st = os.stat(ADB)
+        os.chmod(ADB, st.st_mode | stat.S_IEXEC)
 
     os.remove(ADB_DOWNLOAD_FNAME)
+
 
 logger.info("Starting ADB server...")
 subprocess.run([ADB, "start-server"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
