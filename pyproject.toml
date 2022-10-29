@@ -14,7 +14,7 @@ paddleocr = "^2.6.1"
 mitmproxy = "^8.1.1"
 python-dotenv = "^0.21.0"
 loguru = "^0.6.0"
-paddlepaddle = "^2.3.2"
+paddlepaddle = {version = "^2.4.0rc0", allow-prereleases = true}
 pyzmq = "^24.0.1"
 scikit-image = "^0.19.3"
 numpy = "^1.23.4"
