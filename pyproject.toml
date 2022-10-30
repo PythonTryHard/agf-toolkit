@@ -20,7 +20,8 @@ scikit-image = "^0.19.3"
 numpy = "^1.23.4"
 requests = "^2.28.1"
 tqdm = "^4.64.1"
-adbutils = "^1.0.8"
+adbutils = { git = "https://github.com/PythonTryHard/adbutils" }
+
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"
