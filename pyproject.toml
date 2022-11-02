@@ -11,7 +11,7 @@ packages = [{include = "agf_toolkit"}]
 python = "^3.10, <3.12"
 opencv-python = "^4.6.0.66"
 paddleocr = "^2.6.1"
-mitmproxy = "^9.0.0"
+mitmproxy = "^9.0.1"
 python-dotenv = "^0.21.0"
 loguru = "^0.6.0"
 paddlepaddle = {version = "^2.4.0rc0", allow-prereleases = true}
