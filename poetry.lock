@@ -1090,7 +1090,7 @@ python-versions = "*"
 
 [[package]]
 name = "mitmproxy"
-version = "9.0.0"
+version = "9.0.1"
 description = "An interactive, SSL/TLS-capable intercepting proxy for HTTP/1, HTTP/2, and WebSockets."
 category = "main"
 optional = false
@@ -1121,10 +1121,10 @@ sortedcontainers = ">=2.3,<2.5"
 tornado = ">=6.1,<7"
 urwid = ">=2.1.1,<2.2"
 wsproto = ">=1.0,<1.3"
-zstandard = ">=0.11,<0.19"
+zstandard = ">=0.11,<0.20"
 
 [package.extras]
-dev = ["click (>=7.0,<8.2)", "hypothesis (>=5.8,<7)", "parver (>=0.1,<2.0)", "pdoc (>=4.0.0)", "pyinstaller (==5.6.1)", "pytest (>=6.1.0,<8)", "pytest-asyncio (>=0.17,<0.21)", "pytest-cov (>=2.7.1,<4.1)", "pytest-timeout (>=1.3.3,<2.2)", "pytest-xdist (>=2.1.0,<3.1)", "requests (>=2.9.1,<3)", "tox (>=3.5,<4)", "wheel (>=0.36.2,<0.39)"]
+dev = ["click (>=7.0,<8.2)", "hypothesis (>=5.8,<7)", "parver (>=0.1,<2.0)", "pdoc (>=4.0.0)", "pyinstaller (==5.6.2)", "pytest (>=6.1.0,<8)", "pytest-asyncio (>=0.17,<0.21)", "pytest-cov (>=2.7.1,<4.1)", "pytest-timeout (>=1.3.3,<2.2)", "pytest-xdist (>=2.1.0,<3.1)", "requests (>=2.9.1,<3)", "tox (>=3.5,<4)", "wheel (>=0.36.2,<0.39)"]
 
 [[package]]
 name = "mitmproxy-wireguard"
@@ -2520,7 +2520,7 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10, <3.12"
-content-hash = "b096d52a21de9f0e092a519d6ffb11fce16210f76f24319b25ab24228c2ef151"
+content-hash = "9f7e099f3162e215cffc7e9c3e12e12f8bcadf3ed2aac71f538f1039dc942697"
 
 [metadata.files]
 adbutils = []
@@ -3419,7 +3419,7 @@ mistune = [
     {file = "mistune-2.0.4.tar.gz", hash = "sha256:9ee0a66053e2267aba772c71e06891fa8f1af6d4b01d5e84e267b4570d4d9808"},
 ]
 mitmproxy = [
-    {file = "mitmproxy-9.0.0-py3-none-any.whl", hash = "sha256:e0635ad568bea9a9f21576e5cffc35c802396fe755e4be81d0a77e558e192ac7"},
+    {file = "mitmproxy-9.0.1-py3-none-any.whl", hash = "sha256:8df75b769725e2d8e7fc064e8397f46610d103630c27f6175e41151d6e523e4c"},
 ]
 mitmproxy-wireguard = [
     {file = "mitmproxy_wireguard-0.1.15-cp37-abi3-macosx_10_7_x86_64.whl", hash = "sha256:9a446c9b353ddcb9713e4d924eecad94525df6ad9d5402b719e8212d43b380cc"},
