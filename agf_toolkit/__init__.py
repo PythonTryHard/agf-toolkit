@@ -41,4 +41,4 @@ if not all(
     logger.critical("Missing/Malformed sub stat coordinate settings! Check your .env file! Exiting...")
     sys.exit(1)
 
-logger.info("Loading libraries, this may take a while!")
+logger.info("Loading processing functions and libraries, this may take a while!")
