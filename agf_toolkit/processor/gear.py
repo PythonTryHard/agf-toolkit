@@ -1,6 +1,6 @@
 from typing import Any, Collection, Optional, Union
 
-from agf_toolkit.processor.constants import (
+from agf_toolkit.processor.constant import (
     GEAR_TYPE_MAPPING,
     RARITY_GRADE_MAPPING,
     SET_NAME_MAPPING,

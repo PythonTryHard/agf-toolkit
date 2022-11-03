@@ -4,12 +4,12 @@ import numpy as np
 from loguru import logger
 from paddleocr import PaddleOCR
 
-from agf_toolkit.processor.constants import (
+from agf_toolkit.processor.constant import (
     GEAR_TYPE_MAPPING,
     SET_NAME_MAPPING,
     STAT_TYPE_REGEX_MAPPING,
 )
-from agf_toolkit.processor.gears import Stat
+from agf_toolkit.processor.gear import Stat
 
 STAT_REGEX = f"({'|'.join(i.pattern for i in STAT_TYPE_REGEX_MAPPING)})"
 MAIN_STAT_REGEX = STAT_REGEX + r"\s*?\s*?(\d+?(\.\d+?)?%?)\s"
