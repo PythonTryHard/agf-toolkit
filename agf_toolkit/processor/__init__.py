@@ -35,6 +35,9 @@ def parse_screenshot(screenshot: _np.ndarray[int, _np.dtype[_np.generic]]) -> Ge
 
     main_stat = extract_main_stat(txt)
 
+    # As much as I hate it, I have to do this. Currently, there's no concrete data on rarity threshold except for 6-star
+    # equipments. Any half-arsed attempt to accommodate 6-star with generic detection will result in code bloat without
+    # actually reconciling sub stats' rarity detection and sub stats' value detection. Until then, we have to make do.
     rarity, _sub_stat_rarity = extract_sub_stat_rarity(img)
     _sub_stat_data = extract_sub_stats(txt)
     sub_stats = tuple(Stat(*data, rarity) for data, rarity in zip(_sub_stat_data, _sub_stat_rarity.values()))
