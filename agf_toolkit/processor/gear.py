@@ -43,7 +43,7 @@ class Stat:
         self.rarity = rarity
 
     def __repr__(self) -> str:
-        return f"Stat(type={self.stat_type}, value={self.value}, rarity={self.rarity})"
+        return f"Stat(type={self.stat_type !r}, value={self.value !r}, rarity={self.rarity !r})"
 
     def __str__(self) -> str:
         return self.encode()
@@ -106,12 +106,12 @@ class Gear:
     def __repr__(self) -> str:
         return (
             "Gear("
-            f"set={self.gear_set}, "
-            f"type={self.gear_type}, "
-            f"rarity={self.rarity}, "
-            f"star={self.star}, "
-            f"main_stat={self.main_stat}, "
-            f"sub_stats={self.sub_stats})"
+            f"set={self.gear_set !r}, "
+            f"type={self.gear_type !r}, "
+            f"rarity={self.rarity !r}, "
+            f"star={self.star !r}, "
+            f"main_stat={self.main_stat !r}, "
+            f"sub_stats={self.sub_stats !r})"
         )
 
     def __str__(self) -> str:
