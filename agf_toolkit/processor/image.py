@@ -20,7 +20,7 @@ CIEDE_PIXEL_THRESHOLD = 10
 
 
 def template_match(img, template):
-    """Template matching barebones."""
+    """Template matching bare bone."""
     result = cv2.matchTemplate(img, template, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
     return min_val, max_val, min_loc, max_loc
@@ -38,15 +38,9 @@ def extract_info_box(
     """
     Get the info box from the screenshot.
 
-    This approach does not scale, however, due to the stiff nature of template matching. While
-    multiscale template matching is a thing, it is much more expensive, especially when dealing
-    with typical 1080p phone screenshots. Feature matching while works more generally (i.e. the
-    template does not need to be regenerated), it's ignored since this is a utility script to aid
-    data collection, not for gear importing. It *is* a possibility in the future. But, it is a
-    possibility *in the future*, not now.
-
-    Algorithm is definitely slow due to usage of `python-opencv` which is CPU-only. It could be sped
-    up more if GPU-enabled from manually-compiled OpenCV but again, not needed.
+    Algorithm is definitely slow due to usage of `python-opencv` which is CPU-only. It could be sped up more if cv2.UMat
+    is used to utilise OpenCL, but that would result in massive increased RAM usage on older iGPU or systems without
+    proper OpenCL support.
     """
     # Template matching
     logger.info("Searching for info box.")
@@ -69,19 +63,18 @@ def extract_gear_star(
     """
     Get the gear star from the screenshot.
 
-    This works by template matching the known states of gear star to the screenshot. Despite having
-    to deal with 6 templates, it's faster than get_info_box() due to the smaller sizes of the
-    template and the info box. To improve accuracy, thresholding is applied to both images to
-    improve contrast since the gear star is a single color (save for the 6* star which is purple).
-    The highest score of the each template is returned as that indicates confidence in the result.
+    This works by template-matching the known states of gear star to the screenshot. Despite having to deal with 6
+    templates, it's faster than get_info_box() due to the smaller sizes of the template and the info box. To improve
+    accuracy, thresholding is applied to both images to improve contrast since the gear star is a single color (save for
+    the 6* star which is purple). The highest score of each template is returned as that indicates confidence in the
+    result.
 
-    However, this approach can misidentify 5* and 6* gear, mainly due to the very similar colours
-    of the "indicator star" after thresholding. Test runs had given as low as 0.00098 difference in
-    final score between the two options, but usually this difference will hover around 0.03 to 0.05.
-    In other cases, the difference is 0.1+ with the correct identification giving score on average
-    0.93.
+    However, this approach can misidentify 5* and 6* gear, mainly due to the very similar colours of the "indicator
+    star" after thresholding. Test runs had given as low as 0.00098 difference in final score between the two options,
+    but usually this difference will hover around 0.03 to 0.05. In other cases, the difference is 0.1+ with the correct
+    identification giving score on average 0.93.
 
-    Any improvement/rewrite to this is welcome.
+    Any improvement/rewrite to this is welcomed.
     """
     logger.info("Extracting gear star.")
 
@@ -147,7 +140,7 @@ def extract_sub_stat_rarity(info_box: np.ndarray[int, np.dtype[np.generic]]) -> 
 
     result = {}
     for i, sub_stat in enumerate(("SUB_STAT_1", "SUB_STAT_2", "SUB_STAT_3", "SUB_STAT_4")):
-        # Extract color of pixel, type-check ignored since we verified in toolkit's __init__.py already
+        # Extract color of pixel, type-check ignored since we verified in the toolkit's __init__.py already.
         coord_x, coord_y = map(int, os.environ.get(sub_stat).split(","))  # type: ignore
         base_rgb = color.get_rgb(info_box, coord_x, coord_y)
         logger.debug(f"Color of {sub_stat} is {base_rgb}.")
