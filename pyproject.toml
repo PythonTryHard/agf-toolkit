@@ -53,7 +53,6 @@ disable = [
 ]
 ignore-paths = [
     "tests",
-    "agf_toolkit/templates_sample",
     "agf_toolkit/templates"
 ]
 
