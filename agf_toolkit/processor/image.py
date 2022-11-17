@@ -1,10 +1,9 @@
-import os
-
 import cv2
 import numpy as np
 import skimage
 from loguru import logger
 
+from agf_toolkit import templates
 from agf_toolkit.utils import color
 
 AMBIGUITY_THRESHOLD = 0.05
@@ -139,11 +138,12 @@ def extract_sub_stat_rarity(info_box: np.ndarray[int, np.dtype[np.generic]]) -> 
     logger.info("Extracting sub stat rarity.")
 
     result = {}
-    for i, sub_stat in enumerate(("SUB_STAT_1", "SUB_STAT_2", "SUB_STAT_3", "SUB_STAT_4")):
+    for i, (coord_x, coord_y) in enumerate(
+        (templates.SUB_STAT_1, templates.SUB_STAT_2, templates.SUB_STAT_3, templates.SUB_STAT_4)
+    ):
         # Extract color of pixel, type-check ignored since we verified in the toolkit's __init__.py already.
-        coord_x, coord_y = map(int, os.environ.get(sub_stat).split(","))  # type: ignore
         base_rgb = color.get_rgb(info_box, coord_x, coord_y)
-        logger.debug(f"Color of {sub_stat} is {base_rgb}.")
+        logger.debug(f"Color of sub stat #{i + 1} is {base_rgb}.")
 
         # Loop over rarity color and calculate distance
         scores = {}

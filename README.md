@@ -10,6 +10,8 @@ With these feature(s) to come (in no particular order and without promises):
 - Optimise gear for your character(s) in the game.
 - Capturing gear data from the game's network traffic
 
+[Before reading any further, please note that this project is...](README.md:46)
+
 ## Installation
 You'll need:
 - Python 3.10+ (primary runtime)
@@ -37,36 +39,11 @@ DEBUG=""
 
 IDENTIFIER=""
 PORT=""
-
-SUB_STAT_1="0,0"
-SUB_STAT_2="0,0"
-SUB_STAT_3="0,0"
-SUB_STAT_4="0,0"
 ```
 - `DEBUG` when set to anything other than `""` will enable debug logging.
 - `IDENTIFIER` is for the serial number of your Android device. You can find this by running `adb devices` in your terminal. If you're connecting via `IP`, this is the IP address of your Android device.
-- `PORT` is the debugging port of your Android device. This is ignored when connecting via `USB`. 
-- `SUB_STAT_1` to `4` is the coordinate that the program use to detect gears' sub stat's rarity. For more detail, see [Template preparation/Gear info box](#gear-info-box).
+- `PORT` is the debugging port of your Android device. This is ignored when connecting via `USB`.
 
-## Template preparation
-You will need 6-7 screenshots: 1 of your gear info box and 5-6 of your gear's star grade. The screenshots should be placed in `./agf_tookit/templates` and named as follows:
-```sh
-info_box.png    # Gear info box 
-1.png           # 1-star gear          
-2.png           # 2-star gear
-3.png           # 3-star gear
-4.png           # 4-star gear
-5.png           # 5-star gear
-6.png           # 6-star gear
-```
-And no, **DO NOT** use the sample stuffs included.
-### Gear info box
-I recommend using a screenshot of the info box from Target Elimination mode. Finish a run, and tap on the gear icon on the top right of the screen. This will bring up the info box.
-
-After that, take a screenshot and crop out the info box as tightly as possible without clipping in. Using any software, clean up the box as much as possible. You don't need to be precise with this. For an example, see the [sample info box](https://github.com/PythonTryHard/agf-toolkit/blob/master/templates_sample/info_box.png).
-
-### Gear star
-Again, info box screenshot, this time you crop out the stars. Make sure to not use the ones with equipment icon clipping in. For an example, see the [sample 6-star](https://github.com/PythonTryHard/agf-toolkit/blob/master/templates_sample/6.png)
 
 ## Note: This repository is...
 ### Not feature-complete.

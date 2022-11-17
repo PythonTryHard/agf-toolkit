@@ -28,17 +28,4 @@ logger.add(
 )
 
 logger.debug("Logging 'DEBUG' messages too.")
-
-logger.info("Verifying environment variables.")
-if not all(
-    [
-        _verify_sub_stat_env_var("SUB_STAT_1"),
-        _verify_sub_stat_env_var("SUB_STAT_2"),
-        _verify_sub_stat_env_var("SUB_STAT_3"),
-        _verify_sub_stat_env_var("SUB_STAT_4"),
-    ]
-):
-    logger.critical("Missing/Malformed sub stat coordinate settings! Check your .env file! Exiting...")
-    sys.exit(1)
-
 logger.info("Loading processing functions and libraries, this may take a while!")

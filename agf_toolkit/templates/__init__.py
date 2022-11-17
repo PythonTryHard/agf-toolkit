@@ -11,6 +11,10 @@ __all__ = ["INFO_BOX", "STARS"]
 logging.getLogger(cv2.__name__).setLevel(logging.CRITICAL)
 
 INFO_BOX = cv2.imread(str(resources.path("agf_toolkit.templates", "info_box.png")))
+SUB_STAT_1 = (30, 400)
+SUB_STAT_2 = (30, 450)
+SUB_STAT_3 = (30, 500)
+SUB_STAT_4 = (30, 550)
 STARS = {
     1: cv2.imread(str(resources.path("agf_toolkit.templates", "1.png"))),
     2: cv2.imread(str(resources.path("agf_toolkit.templates", "2.png"))),
