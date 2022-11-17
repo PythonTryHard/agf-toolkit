@@ -36,6 +36,7 @@ def auto_calibrate_scale(
     # Set up scaling factors
     if _first_step:
         initial_scale = screenshot.shape[0] / 1080
+        logger.debug(f"Screenshot normalised to 1080-pixel height (initial scale: {initial_scale:.2f})")
         factors = _generate_scaling_factors(
             scaling_lower_bound * initial_scale, scaling_upper_bound * initial_scale, scaling_step
         )
@@ -57,6 +58,10 @@ def auto_calibrate_scale(
             _, scores[scaling_factor], _, _ = template_match(rescaled_screenshot_umat, template_umat)
 
     best_scaling_factor = max(scores, key=scores.get)  # type: ignore
+    logger.debug(
+        f"Best scaling factor as of current round: {best_scaling_factor:05.4f} "
+        f"at {scores[best_scaling_factor] * 100:05.4f}%"
+    )
 
     if rounds == 1:
         return best_scaling_factor
