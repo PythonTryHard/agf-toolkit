@@ -11,8 +11,7 @@ from agf_toolkit.processor.image import (
 from agf_toolkit.processor.text import (
     extract_gear_set,
     extract_gear_type,
-    extract_main_stat,
-    extract_sub_stats,
+    extract_stats,
     extract_text,
 )
 
@@ -26,14 +25,13 @@ def parse_screenshot(screenshot: np.ndarray[int, np.dtype[np.generic]]) -> Gear:
     img = extract_info_box(screenshot, templates.INFO_BOX)
     txt = extract_text(img)
 
-    main_stat = extract_main_stat(txt)
-
     # As much as I hate it, I have to do this. Currently, there's no concrete data on rarity threshold except for 6-star
     # equipments. Any half-arsed attempt to accommodate 6-star with generic detection will result in code bloat without
     # actually reconciling sub stats' rarity detection and sub stats' value detection. Until then, we have to make do.
     rarity, _sub_stat_rarity = extract_sub_stat_rarity(img)
-    _sub_stat_data = extract_sub_stats(txt)
-    sub_stats = tuple(Stat(*data, rarity) for data, rarity in zip(_sub_stat_data, _sub_stat_rarity.values()))
+    _stat_rarity = (None, *_sub_stat_rarity.values())
+    _stat_data = extract_stats(txt)
+    main_stat, *sub_stats = tuple(Stat(*data, rarity) for data, rarity in zip(_stat_data, _stat_rarity))
 
     star = extract_gear_star(img, templates.STARS)
     gear_set = extract_gear_set(txt)

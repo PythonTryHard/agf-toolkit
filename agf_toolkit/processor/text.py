@@ -9,11 +9,9 @@ from agf_toolkit.processor.constant import (
     SET_NAME_MAPPING,
     STAT_TYPE_REGEX_MAPPING,
 )
-from agf_toolkit.processor.gear import Stat
 
-STAT_REGEX = f"({'|'.join(i.pattern for i in STAT_TYPE_REGEX_MAPPING)})"
-MAIN_STAT_REGEX = STAT_REGEX + r"\s*?\s*?(\d+?(\.\d+?)?%?)\s"
-SUB_STAT_REGEX = STAT_REGEX + r"\s*?[\(\[\{]Locked[\)\]\}]\s*?(\d+?(\.\d+?)?%?)\s"
+stat_types = f"({'|'.join(i.pattern for i in STAT_TYPE_REGEX_MAPPING)})"
+STAT_REGEX = stat_types + r"\s*?([\[\{\(]\s*[LliI1]ocked\s*[\}\]\)])?\s*?(\d+?(\.\d+?)?%?)\s"
 
 logger.info("If this is your first start, the OCR model will be downloaded (roughly 20MB).")
 logger.info("Loading OCR model.")
@@ -50,23 +48,11 @@ def extract_gear_type(ocr_string: str) -> str:
     raise RuntimeError("Gear set not detected! Please run again under debug mode and report this issues!")
 
 
-def extract_main_stat(ocr_string: str) -> Stat:
-    """Extract gear's main stat from the OCR-ed string."""
-    regex_result = re.search(MAIN_STAT_REGEX, ocr_string)
-
-    if regex_result is None:
-        raise RuntimeError("Main stat not detected! Please run again under debug mode and report this issues!")
-
-    main_stat = regex_result.groups()
-    logger.info(f"Main stat detected as: {main_stat}")
-    return Stat(main_stat[0], main_stat[1], None)
-
-
-def extract_sub_stats(ocr_string: str) -> list[tuple[str, str]]:
+def extract_stats(ocr_string: str) -> list[tuple[str, str]]:
     """Extract gear sub stats from the OCR-ed string."""
-    sub_stats = [(parse_sub_stat_type(i[0]), i[1]) for i in re.findall(SUB_STAT_REGEX, ocr_string)]
-    logger.info(f"Sub stats detected as: {sub_stats}")
-    return sub_stats
+    stats = [(parse_sub_stat_type(i[0]), i[2]) for i in re.findall(STAT_REGEX, ocr_string)]
+    logger.info(f"Stats detected as: {stats}")
+    return stats
 
 
 def parse_sub_stat_type(sub_stat_regex_result: str) -> str:
