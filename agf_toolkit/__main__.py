@@ -3,7 +3,7 @@ import sys
 
 from loguru import logger
 
-from agf_toolkit.processor import parse_screenshot
+from agf_toolkit.processor.utils import parse_screenshot
 from agf_toolkit.utils import adb
 
 # Enter infinite loop
