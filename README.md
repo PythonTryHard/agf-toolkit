@@ -10,7 +10,7 @@ With these feature(s) to come (in no particular order and without promises):
 - Optimise gear for your character(s) in the game.
 - Capturing gear data from the game's network traffic
 
-[Before reading any further, please note that this project is...](README.md:46)
+[Before reading any further, please note that this project is...](https://github.com/PythonTryHard/agf-toolkit#note-this-repository-is)
 
 ## Installation
 You'll need:
