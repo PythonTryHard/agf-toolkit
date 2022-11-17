@@ -168,3 +168,8 @@ cython_debug/
 
 # Jupyter Notebooks
 *.ipynb
+
+# Miscellanous files for development
+*.zip
+*.dat
+test_data
