@@ -17,7 +17,7 @@ STAT_TYPE_REGEX_MAPPING = {
     re.compile(r"ATK\s*?\(%\)"): "ATK (%)",
     re.compile(r"DEF\s*?\(%\)"): "DEF (%)",
     re.compile(r"HP\s*?\(%\)"): "HP (%)",
-    re.compile(r"SP"): "SPD",
+    re.compile(r"SPD"): "SPD",
     re.compile(r"Critical"): "Critical",
     re.compile(r"CRIT\s*?DMG"): "CRIT DMG",
     re.compile(r"Status\s*?ACC"): "Status ACC",
