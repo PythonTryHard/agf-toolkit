@@ -106,8 +106,8 @@ class Gear:
     def __repr__(self) -> str:
         return (
             "Gear("
-            f"set={self.gear_set !r}, "
-            f"type={self.gear_type !r}, "
+            f"gear_set={self.gear_set !r}, "
+            f"gear_type={self.gear_type !r}, "
             f"rarity={self.rarity !r}, "
             f"star={self.star !r}, "
             f"main_stat={self.main_stat !r}, "
