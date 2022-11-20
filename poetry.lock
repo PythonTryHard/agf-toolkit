@@ -2542,7 +2542,7 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.11, <3.12"
-content-hash = "a0aba0ef4c5a0a1e135d962b03a35ce127f588bda469e377c5d0e24ce7335485"
+content-hash = "04113d48439cd30dd4b8ba222253c485d07e2d9dd7fd3ed735ba75327a126c9a"
 
 [metadata.files]
 adbutils = []

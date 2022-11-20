@@ -8,29 +8,33 @@ readme = "README.md"
 packages = [{include = "agf_toolkit"}]
 
 [tool.poetry.dependencies]
-python = "^3.11, <3.12"
-opencv-python = "^4.6.0.66"
-paddleocr = "^2.6.1"
-python-dotenv = "^0.21.0"
+adbutils = { git = "https://github.com/PythonTryHard/adbutils" }
 loguru = "^0.6.0"
-paddlepaddle = "^2.4.0"
-scikit-image = "^0.19.3"
 numpy = "^1.23.5"
+opencv-python = "^4.6.0.66"
+paddlepaddle = "^2.4.0"
+paddleocr = "^2.6.1"
+python = "^3.11, <3.12"
+python-dotenv = "^0.21.0"
+scikit-image = "^0.19.3"
 requests = "^2.28.1"
 tqdm = "^4.64.1"
-adbutils = { git = "https://github.com/PythonTryHard/adbutils" }
+
+[tool.poetry.group.dev]
+optional = true
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"
-pre-commit = "^2.20.0"
 isort = "^5.10.1"
-mypy = "^0.981"
-pylint = "^2.15.3"
-types-requests = "^2.28.11.2"
-pytest = "^7.2.0"
-
-[tool.poetry.group.prototyping.dependencies]
 jupyter = "^1.0.0"
+mypy = "^0.981"
+pre-commit = "^2.20.0"
+pylint = "^2.15.3"
+pytest = "^7.2.0"
+types-requests = "^2.28.11.2"
+
+[tool.poetry.group.network]
+optional = true
 
 [tool.poetry.group.network.dependencies]
 mitmproxy = "^9.0.1"
