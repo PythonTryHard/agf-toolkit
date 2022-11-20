@@ -8,14 +8,14 @@ readme = "README.md"
 packages = [{include = "agf_toolkit"}]
 
 [tool.poetry.dependencies]
-python = "^3.10, <3.12"
+python = "^3.11, <3.12"
 opencv-python = "^4.6.0.66"
 paddleocr = "^2.6.1"
 python-dotenv = "^0.21.0"
 loguru = "^0.6.0"
 paddlepaddle = "^2.4.0"
 scikit-image = "^0.19.3"
-numpy = "^1.23.4"
+numpy = "^1.23.5"
 requests = "^2.28.1"
 tqdm = "^4.64.1"
 adbutils = { git = "https://github.com/PythonTryHard/adbutils" }
