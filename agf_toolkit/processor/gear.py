@@ -153,7 +153,7 @@ class Gear:
     @classmethod
     def decode(cls, input_string: str):
         """Decode a string and return a Gear instance."""
-        if len(split_input := input_string.split(",")) - 4 % 3 != 0:
+        if (len(split_input := input_string.split(",")) - 4) % 3 != 0:
             raise ValueError("Invalid encoded string (number of components does not match expected length (3n + 4))")
 
         gear_set, gear_type, rarity, star, *stats = split_input
