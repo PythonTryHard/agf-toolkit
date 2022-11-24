@@ -15,6 +15,7 @@ With these feature(s) to come (in no particular order and without promises):
 ## Installation
 You'll need:
 - Python 3.10+ (primary runtime)
+	- Python 3.11 support is currently blocked by PaddleOCR (and its underlying `paddlepaddle` package). When will these packages add pre-built wheels, who knows.
 - [`poetry`](https://python-poetry.org/docs/#installation) (to install dependencies)
 - [`adb`](https://developer.android.com/studio/command-line/adb) (to interact with your Android device)
 
