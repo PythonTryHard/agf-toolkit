@@ -75,6 +75,7 @@ class Stat(Encodable):
 
     def encode(self) -> str:
         """Encode the gear object"""
+        self.validate()
         encoded_stat_type = STAT_TYPE_MAPPING.get(self.stat_type)
         encoded_rarity = RARITY_GRADE_MAPPING.get(self.stat_rarity)
         encoded_stat_value = -1 if self.stat_value is None else self.stat_value
@@ -198,6 +199,7 @@ class Gear(Encodable):
 
     def encode(self) -> str:
         """Encode the gear object"""
+        self.validate()
         encoded_gear_set = SET_NAME_MAPPING.get(self.gear_set)
         encoded_gear_type = GEAR_TYPE_MAPPING.get(self.gear_type)
         encoded_gear_rarity = RARITY_GRADE_MAPPING.get(self.gear_rarity)
