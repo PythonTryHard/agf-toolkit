@@ -1,4 +1,5 @@
 import random
+import string
 
 import pytest
 
@@ -64,12 +65,14 @@ class TestNullOperations:
 
 
 class TestSpaceCharacterHandling:
-    """Test the decoder on handling space characters"""
+    """
+    Test the decoder on handling space characters
+    """
 
-    def test_space_character_gear(self, gear_object, gear_decode):
+    def test_invalid_character_gear(self, gear_object, gear_decode):
         gear_decode_array = list(gear_decode)
         for i in range(1000):
-            gear_decode_array.insert(random.randint(0, len(gear_decode_array)), " ")
-        spaced_gear_decode = "".join(gear_decode_array)
+            gear_decode_array.insert(random.randint(0, len(gear_decode_array)), random.choice(string.ascii_letters))
+        polluted_gear_decode = "".join(gear_decode_array)
 
-        assert Gear.decode(spaced_gear_decode) == gear_object
+        assert Gear.decode(polluted_gear_decode) == gear_object

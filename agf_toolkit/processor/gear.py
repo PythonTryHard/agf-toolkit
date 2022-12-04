@@ -10,12 +10,13 @@ from agf_toolkit.processor.constant import (
     STAT_TYPE_MAPPING,
 )
 
+VALIDATION_REGEX = re.compile(r"[^0-9.,%-]")
+
 
 def _reverse_dict(input_dict: dict) -> dict:
     return {v: k for k, v in input_dict.items()}
 
 
-# type: ignore
 class Stat(Encodable):
     """Represents a stat of a gear."""
 
@@ -50,7 +51,7 @@ class Stat(Encodable):
     def __repr__(self) -> str:
         return f"Stat(stat_type={self.stat_type !r}, stat_value={self.stat_value !r}, rarity={self.stat_rarity !r})"
 
-    def validate(self) -> None:  # type: ignore
+    def validate(self) -> None:
         """Validate the data in the object and modify the data in-place. All invalid data will be set to `None`."""
         for mapping, attribute in [
             (STAT_TYPE_MAPPING, "stat_type"),
@@ -105,9 +106,9 @@ class Stat(Encodable):
         :return: A Stat object.
         """
         if isinstance(encoded_string, str):
-            args = encoded_string.replace(" ", "").split(",")[:3]
+            args = VALIDATION_REGEX.sub("", encoded_string).split(",")[:3]
         else:
-            args = [i.replace(" ", "") for i in encoded_string[:3]]
+            args = [VALIDATION_REGEX.sub("", i) for i in encoded_string[:3]]
 
         raw_stat_type, raw_rarity, raw_value = args
 
@@ -242,9 +243,9 @@ class Gear(Encodable):
         :return: A Gear object.
         """
         if isinstance(encoded_string, str):
-            args = encoded_string.replace(" ", "").split(",")
+            args = VALIDATION_REGEX.sub("", encoded_string).split(",")
         else:
-            args = [i.replace(" ", "") for i in encoded_string]
+            args = [VALIDATION_REGEX.sub("", i) for i in encoded_string]
 
         raw_gear_set, raw_gear_type, raw_gear_rarity, raw_gear_star, *raw_stats = args
 
