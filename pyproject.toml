@@ -14,18 +14,18 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry.dependencies]
-python = "^3.10, <3.12"
-typing-extensions = { version = "^4.4.0", python = "<3.11" }
+python = "^3.10, <3.11"
 loguru = "^0.6.0"
-python-dotenv = "^0.21.0"
+python-dotenv = "^0.21.0"   
 numpy = "^1.23.5"
-paddlepaddle = [ { version = "~2.3.2", python = "<3.11" },	{ version = "^2.4.0", python = ">=3.11" } ]
-paddleocr = "^2.6.1"
+paddlepaddle = [ { version = "~2.4.0", python = "<3.11" },	{ version = "~2.4.0", python = ">=3.11" } ]
+paddleocr = "^2.6.1.1"
 opencv-python = "^4.6.0.66"
 scikit-image = "^0.19.3"
 adbutils = { git = "https://github.com/PythonTryHard/adbutils" }
 requests = "^2.28.1"
 tqdm = "^4.64.1"
+pytest = "^7.2.0"
 
 
 [tool.poetry.group.dev]
