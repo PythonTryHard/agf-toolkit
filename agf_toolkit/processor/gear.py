@@ -161,7 +161,14 @@ class Gear(Encodable):
         return self.as_dict() == other.as_dict()
 
     def __repr__(self):
-        return f"'{self.encode()}'"
+        return (
+            f"Gear(gear_set={self.gear_set !r}, "
+            f"gear_type={self.gear_type !r}, "
+            f"gear_rarity={self.gear_rarity !r}, "
+            f"gear_star={self.gear_star !r}, "
+            f"main_stat={self.main_stat !r}, "
+            f"sub_stats={self.sub_stats !r})"
+        )
 
     def validate(self) -> None:
         """
