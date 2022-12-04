@@ -52,7 +52,6 @@ class Stat(Encodable):
 
     def validate(self) -> None:  # type: ignore
         """Validate the data in the object and modify the data in-place. All invalid data will be set to `None`."""
-        # type: ignore
         for mapping, attribute in [
             (STAT_TYPE_MAPPING, "stat_type"),
             (RARITY_GRADE_MAPPING, "stat_rarity"),
@@ -111,7 +110,10 @@ class Stat(Encodable):
 
         raw_stat_type, raw_rarity, raw_value = args
 
-        return cls(raw_stat_type, raw_value, raw_rarity)
+        stat_type = _reverse_dict(STAT_TYPE_MAPPING).get(int(raw_stat_type), None) if raw_stat_type.isdigit() else None
+        rarity = _reverse_dict(RARITY_GRADE_MAPPING).get(int(raw_rarity), None) if raw_rarity.isdigit() else None
+
+        return cls(stat_type, raw_value, rarity)
 
 
 class Gear(Encodable):
@@ -156,6 +158,9 @@ class Gear(Encodable):
             return False
         return self.as_dict() == other.as_dict()
 
+    def __repr__(self):
+        return f"'{self.encode()}'"
+
     def validate(self) -> None:
         """
         Validate the data in the object and modify the data in-place. All invalid data will be set to `None`.
@@ -196,6 +201,7 @@ class Gear(Encodable):
         encoded_gear_set = SET_NAME_MAPPING.get(self.gear_set)
         encoded_gear_type = GEAR_TYPE_MAPPING.get(self.gear_type)
         encoded_gear_rarity = RARITY_GRADE_MAPPING.get(self.gear_rarity)
+        encoded_gear_star = self.gear_star if self.gear_star is not None else -1
         encoded_main_stat = self.main_stat.encode()
 
         encoded_sub_stats = ",".join([sub_stat.encode() for sub_stat in self.sub_stats])
@@ -206,7 +212,7 @@ class Gear(Encodable):
             f"{encoded_gear_set},"
             f"{encoded_gear_type},"
             f"{encoded_gear_rarity},"
-            f"{self.gear_star},"
+            f"{encoded_gear_star},"
             f"{encoded_main_stat}"
             f"{encoded_sub_stats}"
         )
@@ -240,7 +246,13 @@ class Gear(Encodable):
 
         raw_gear_set, raw_gear_type, raw_gear_rarity, raw_gear_star, *raw_stats = args
 
-        stats = [raw_stats[i : i + 3] for i in range(0, len(raw_stats), 3)]
-        raw_main_stat, *raw_sub_stats = [Stat.decode(sub_stat) for sub_stat in stats]
+        gear_set = _reverse_dict(SET_NAME_MAPPING).get(int(raw_gear_set), None) if raw_gear_set.isdigit() else None
+        gear_type = _reverse_dict(GEAR_TYPE_MAPPING).get(int(raw_gear_type), None) if raw_gear_type.isdigit() else None
+        gear_rarity = (
+            _reverse_dict(RARITY_GRADE_MAPPING).get(int(raw_gear_rarity)) if raw_gear_rarity.isdigit() else None
+        )
 
-        return cls(raw_gear_set, raw_gear_type, raw_gear_rarity, raw_gear_star, raw_main_stat, raw_sub_stats)
+        stats = [raw_stats[i : i + 3] for i in range(0, len(raw_stats), 3)]
+        main_stat, *sub_stats = [Stat.decode(sub_stat) for sub_stat in stats]
+
+        return cls(gear_set, gear_type, gear_rarity, raw_gear_star, main_stat, sub_stats)
