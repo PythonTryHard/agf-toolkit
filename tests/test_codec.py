@@ -66,7 +66,9 @@ class TestNullOperations:
 
 class TestSpaceCharacterHandling:
     """
-    Test the decoder on handling space characters
+    Test the decoder on handling invalid characters.
+
+    This does not protect against rubbish data.
     """
 
     def test_invalid_character_gear(self, gear_object, gear_decode):
