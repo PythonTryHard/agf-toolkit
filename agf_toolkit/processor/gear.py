@@ -235,8 +235,8 @@ class Gear(Encodable):
         Decode an encoded gear string into a Gear object.
 
         Method is overloaded to accept either a gear string as-is, or a Sequence of strings that composes into a gear
-        string, i.e.: `"5,5,2,3,10,43%,0,7,12.2,4,9,40%,1,6,0.4%,3,1,988.0,2"` or `["5", "5", "2", "3", "10,43%", "0",
-        "7", "12.2", "4", "9", "40%", "1", "6", "0.4%", "3", "1", "988.0", "2"]`.
+        string, i.e.: `"5,5,2,3,10,-1,43%,7,4,12.2,9,1,40%,6,3,0.4%,1,2,988.0"` or ['5', '5', '2', '3', '10', '-1',
+        '43%', '7', '4', '12.2', '9', '1', '40%', '6', '3', '0.4%', '1', '2', '988.0']
 
         :param encoded_string: The encoded gear string, or a Sequence of encoded gear strings.
         :return: A Gear object.
