@@ -27,7 +27,7 @@ def parse_screenshot(screenshot: np.ndarray[int, np.dtype[np.generic]]) -> Gear:
 
     # As much as I hate it, I have to do this. Currently, there's no concrete data on rarity threshold except for 6-star
     # equipments. Any half-arsed attempt to accommodate 6-star with generic detection will result in code bloat without
-    # actually reconciling sub stats' rarity detection and sub stats' value detection. Until then, we have to make do.
+    # actually reconciling sub stats' rarity detection and sub stats' stat_value detection. Until then, we make do.
     rarity, _sub_stat_rarity = extract_sub_stat_rarity(img)
     _stat_rarity = (None, *_sub_stat_rarity.values())
     _stat_data = extract_stats(txt)
@@ -40,8 +40,8 @@ def parse_screenshot(screenshot: np.ndarray[int, np.dtype[np.generic]]) -> Gear:
     return Gear(
         gear_set=gear_set,
         gear_type=gear_type,
-        rarity=rarity,
-        star=star,
+        gear_rarity=rarity,
+        gear_star=star,
         main_stat=main_stat,
         sub_stats=sub_stats,
     )

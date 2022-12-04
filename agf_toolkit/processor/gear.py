@@ -1,5 +1,8 @@
-from typing import Any, Collection, Optional, Union
+import re
+from collections.abc import Sequence
+from typing import overload
 
+from agf_toolkit.abc import Encodable
 from agf_toolkit.processor.constant import (
     GEAR_TYPE_MAPPING,
     RARITY_GRADE_MAPPING,
@@ -12,160 +15,232 @@ def _reverse_dict(input_dict: dict) -> dict:
     return {v: k for k, v in input_dict.items()}
 
 
-def _null_safe_encode(
-    value: Any, null_values: Optional[Collection[Any]] = None, null_representation: Any = "-1"
-) -> Any:
-    if not null_values:
-        null_values = []
-    return null_representation if value in [*null_values, None] else value
+# type: ignore
+class Stat(Encodable):
+    """Represents a stat of a gear."""
 
+    VALUE_REGEX = re.compile(r"\d+\.?\d*%?")
 
-def _null_safe_decode(value: Any, null_indicator: Any = "-1", null_value: Any = None) -> Any:
-    return value if value != null_indicator else null_value
+    def __init__(self, stat_type, stat_value, stat_rarity) -> None:
+        """
+        Initialise a Stat object and validate it.
 
+        Since all attributes are validated immediately, type check ignores should be fine.
 
-class Stat:
-    """
-    Represent a gear's stat (singular).
+        Note:
+        -   This class is not intended to be used directly, as it is meant to be a processor for the raw stat data
+            extracted by various processors.
+        -   While the constructor will accept any string as the stat type, after validation all unknown values will be
+            set to `None`.
 
-    Unless absolutely necessary, this class should not be instantiated manually.
-    Nevertheless, there is one way to create a Stat instance:
-        1. Manually supplying the value as required by the constructor i.e., `Stat("HP", "20%", "Yellow")`
-
-    The rationale is as this is meant to be used only as intermediate to add to a Gear instance, supporting decoding
-    from comma-separated string is redundant; plus, decoding in a gear object most likely needs to split the string
-    fully by commas rather than splitting 3 times, then skip ahead, split, skip ahead, split.
-    """
-
-    def __init__(self, stat_type: Union[str, None], value: Union[str, None], rarity: Union[str, None]) -> None:
+        :param stat_type: The type of the stat. This must be one of the keys in STAT_TYPE_MAPPING.
+        :param stat_value: The stat_value of the stat. This must be a valid number, or a percentage.
+        :param stat_rarity: The rarity grade of the stat. This must be one of the keys in RARITY_GRADE_MAPPING.
+        """
         self.stat_type = stat_type
-        self.value = value
-        self.rarity = rarity
+        self.stat_value = stat_value
+        self.stat_rarity = stat_rarity
+        self.validate()
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self.as_dict() == other.as_dict()
 
     def __repr__(self) -> str:
-        return f"Stat(type={self.stat_type !r}, value={self.value !r}, rarity={self.rarity !r})"
+        return f"Stat(stat_type={self.stat_type !r}, stat_value={self.stat_value !r}, rarity={self.stat_rarity !r})"
 
-    def __str__(self) -> str:
-        return self.encode()
+    def validate(self) -> None:  # type: ignore
+        """Validate the data in the object and modify the data in-place. All invalid data will be set to `None`."""
+        # type: ignore
+        for mapping, attribute in [
+            (STAT_TYPE_MAPPING, "stat_type"),
+            (RARITY_GRADE_MAPPING, "stat_rarity"),
+        ]:
+            if (mapping.get(getattr(self, attribute), None) is None) or (getattr(self, attribute) == -1):
+                setattr(self, attribute, None)
+
+        if not self.VALUE_REGEX.match(str(self.stat_value)):
+            self.stat_value = None
+        else:
+            if not str(self.stat_value).endswith("%"):
+                self.stat_value = float(self.stat_value)
 
     def as_dict(self) -> dict:
-        """Return a dict representing the stat"""
+        """Return the Stat object as a dictionary."""
         return {
             "stat_type": self.stat_type,
-            "value": self.value,
-            "rarity": self.rarity,
+            "stat_value": self.stat_value,
+            "rarity": self.stat_rarity,
         }
 
     def encode(self) -> str:
-        """Encode the stat into a comma-separated string"""
-        return (
-            f"{_null_safe_encode(STAT_TYPE_MAPPING.get(self.stat_type))},"
-            f"{_null_safe_encode(self.value)},"
-            f"{_null_safe_encode(RARITY_GRADE_MAPPING.get(self.rarity))}"
-        )
+        """Encode the gear object"""
+        encoded_stat_type = STAT_TYPE_MAPPING.get(self.stat_type)
+        encoded_rarity = RARITY_GRADE_MAPPING.get(self.stat_rarity)
+        encoded_stat_value = -1 if self.stat_value is None else self.stat_value
+
+        return f"{encoded_stat_type},{encoded_rarity},{encoded_stat_value}"
 
     @classmethod
-    def decode(cls, stat_type, value, rarity):
-        """Parse comma-separated stats into a Stat object"""
-        return cls(
-            stat_type=_reverse_dict(STAT_TYPE_MAPPING).get(_null_safe_decode(stat_type)),
-            value=_null_safe_decode(value),
-            rarity=_reverse_dict(RARITY_GRADE_MAPPING).get(_null_safe_decode(rarity)),
-        )
+    @overload
+    def decode(cls, encoded_string: str):
+        ...
+
+    @classmethod
+    @overload
+    def decode(cls, encoded_string: Sequence[str]):
+        ...
+
+    @classmethod
+    def decode(cls, encoded_string: str | Sequence[str]):
+        """
+        Decode an encoded stat string into a Stat object.
+
+        Method is overloaded to accept either a stat string as-is, or a Sequence of strings that composes into a stat
+        string, i.e.: `"12,5,88.6"` or `["12", "5", "88.6"]`. Note that only the first 3 comma-separated values are used
+        for decoding.
+
+        :param encoded_string: The encoded stat string, or a Sequence of encoded stat strings.
+        :return: A Stat object.
+        """
+        if isinstance(encoded_string, str):
+            args = encoded_string.replace(" ", "").split(",")[:3]
+        else:
+            args = [i.replace(" ", "") for i in encoded_string[:3]]
+
+        raw_stat_type, raw_rarity, raw_value = args
+
+        return cls(raw_stat_type, raw_value, raw_rarity)
 
 
-class Gear:
-    """
-    Represent a unit of equipment in the game.
-
-    There are two ways to create a Gear object:
-        1. Pass a photo containing the gear info box into `parse_screenshot()` after instantiating.
-        2. Manually input the needed values when instantiating.
-
-    Note:
-        - Any supplied constructor data will get overwritten after calling `parse_screenshot()`.
-    """
+class Gear(Encodable):
+    """Represents a gear."""
 
     # pylint: disable=too-many-arguments
     def __init__(
         self,
-        gear_set: Union[str, None] = None,
-        gear_type: Union[str, None] = None,
-        rarity: Union[str, None] = None,
-        star: Union[int, None] = None,
-        main_stat: Union[Stat, None] = None,
-        sub_stats: Union[Collection[Stat], None] = None,
-    ) -> None:
+        gear_set="",
+        gear_type="",
+        gear_rarity="",
+        gear_star=-1,
+        main_stat: Stat = Stat("", "", ""),
+        sub_stats: Sequence[Stat] = (),
+    ):
+        """
+        Initialise a Gear object and validate it.
+
+        Note:
+        -   This class is not intended to be used directly, as it is meant to be a processor for the raw gear data
+            extracted by various processors.
+        -   While the constructor will accept any string as the gear set, gear type and gear rarity, after validation
+            all unknown values will be set to `None`.
+
+        :param gear_set: The gear set of the gear. This must be one of the keys in SET_NAME_MAPPING.
+        :param gear_type: The type of the gear. This must be one of the keys in GEAR_TYPE_MAPPING.
+        :param gear_rarity: The rarity grade of the gear. This must be one of the keys in RARITY_GRADE_MAPPING.
+        :param gear_star: The number of stars the gear has.
+        :param main_stat: The main stat of the gear.
+        :param sub_stats: The sub stats of the gear.
+        """
         self.gear_set = gear_set
         self.gear_type = gear_type
-        self.rarity = rarity
-        self.star = star
-        self.main_stat = Stat(None, None, None) if main_stat is None else main_stat
-        self.sub_stats = [Stat(None, None, None)] if sub_stats is None else sub_stats
+        self.gear_rarity = gear_rarity
+        self.gear_star = gear_star
+        self.main_stat = main_stat
+        self.sub_stats = sub_stats
+        self.validate()
 
-    def __repr__(self) -> str:
-        return (
-            "Gear("
-            f"gear_set={self.gear_set !r}, "
-            f"gear_type={self.gear_type !r}, "
-            f"rarity={self.rarity !r}, "
-            f"star={self.star !r}, "
-            f"main_stat={self.main_stat !r}, "
-            f"sub_stats={self.sub_stats !r})"
-        )
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self.as_dict() == other.as_dict()
 
-    def __str__(self) -> str:
-        return self.encode()
+    def validate(self) -> None:
+        """
+        Validate the data in the object and modify the data in-place. All invalid data will be set to `None`.
+
+        This is only run once after initialising an object, so typing error should be ignored.
+        """
+        for mapping, attribute in [
+            (SET_NAME_MAPPING, "gear_set"),
+            (GEAR_TYPE_MAPPING, "gear_type"),
+            (RARITY_GRADE_MAPPING, "gear_rarity"),
+        ]:
+            if (mapping.get(getattr(self, attribute), None) is None) or (getattr(self, attribute) == -1):
+                setattr(self, attribute, None)
+
+        if not str(self.gear_star).isdigit():
+            self.gear_star = None
+        else:
+            self.gear_star = int(self.gear_star)
+
+        self.main_stat.validate()
+        for i in self.sub_stats:
+            i.validate()
+        self.sub_stats = list(self.sub_stats)
 
     def as_dict(self) -> dict:
-        """Return a dict representing the gear"""
+        """Return the Gear object as a dictionary."""
         return {
-            "set": self.gear_set,
-            "type": self.gear_type,
-            "rarity": self.rarity,
-            "star": self.star,
+            "gear_set": self.gear_set,
+            "gear_type": self.gear_type,
+            "gear_rarity": self.gear_rarity,
+            "gear_star": self.gear_star,
             "main_stat": self.main_stat.as_dict(),
-            "sub_stats": list(i.as_dict() for i in self.sub_stats),
+            "sub_stats": [sub_stat.as_dict() for sub_stat in self.sub_stats],
         }
 
     def encode(self) -> str:
-        """
-        Return a comma-separated compact representation of a gear.
+        """Encode the gear object"""
+        encoded_gear_set = SET_NAME_MAPPING.get(self.gear_set)
+        encoded_gear_type = GEAR_TYPE_MAPPING.get(self.gear_type)
+        encoded_gear_rarity = RARITY_GRADE_MAPPING.get(self.gear_rarity)
+        encoded_main_stat = self.main_stat.encode()
 
-        The encoding scheme is as follows:
-            `set_name,gear_type,rarity,star,(main_stat),*(sub_stats)`.
-        With:
-            - `(main_stat)` is always a 3-tuple of `type,value,rarity`.
-            - `(sub_stats)` is to be split exhaustively into 3-tuples: `type,value,rarity`.
-        Note:
-             - `None` is represented as `-1`.
+        encoded_sub_stats = ",".join([sub_stat.encode() for sub_stat in self.sub_stats])
+        if encoded_sub_stats:
+            encoded_sub_stats = f",{encoded_sub_stats}"
 
-        """
         return (
-            f"{_null_safe_encode(SET_NAME_MAPPING.get(self.gear_set))},"
-            f"{_null_safe_encode(GEAR_TYPE_MAPPING.get(self.gear_type))},"
-            f"{_null_safe_encode(RARITY_GRADE_MAPPING.get(self.rarity))},"
-            f"{self.star if self.star is not None and 0 < self.star <= 6 else -1},"
-            f"{self.main_stat},"
-            f"{','.join(str(i) for i in self.sub_stats)}"
+            f"{encoded_gear_set},"
+            f"{encoded_gear_type},"
+            f"{encoded_gear_rarity},"
+            f"{self.gear_star},"
+            f"{encoded_main_stat}"
+            f"{encoded_sub_stats}"
         )
 
     @classmethod
-    def decode(cls, input_string: str):
-        """Decode a string and return a Gear instance."""
-        if (len(split_input := input_string.split(",")) - 4) % 3 != 0:
-            raise ValueError("Invalid encoded string (number of components does not match expected length (3n + 4))")
+    @overload
+    def decode(cls, encoded_string: str):
+        ...
 
-        gear_set, gear_type, rarity, star, *stats = split_input
+    @classmethod
+    @overload
+    def decode(cls, encoded_string: Sequence[str]):
+        ...
 
-        main_stat = Stat.decode(*stats[:3])
-        sub_stats = [Stat.decode(*i) for i in [stats[i : i + 3] for i in range(3, len(stats), 3)]]  # Split to 3s
+    @classmethod
+    def decode(cls, encoded_string: str | Sequence[str]):
+        """
+        Decode an encoded gear string into a Gear object.
 
-        return cls(
-            gear_set=_reverse_dict(SET_NAME_MAPPING).get(_null_safe_decode(gear_set)),
-            gear_type=_reverse_dict(GEAR_TYPE_MAPPING).get(_null_safe_decode(gear_type)),
-            rarity=_reverse_dict(RARITY_GRADE_MAPPING).get(_null_safe_decode(rarity)),
-            star=int(star) if star.isdigit() else None,
-            main_stat=main_stat,
-            sub_stats=sub_stats,
-        )
+        Method is overloaded to accept either a gear string as-is, or a Sequence of strings that composes into a gear
+        string, i.e.: `"5,5,2,3,10,43%,0,7,12.2,4,9,40%,1,6,0.4%,3,1,988.0,2"` or `["5", "5", "2", "3", "10,43%", "0",
+        "7", "12.2", "4", "9", "40%", "1", "6", "0.4%", "3", "1", "988.0", "2"]`.
+
+        :param encoded_string: The encoded gear string, or a Sequence of encoded gear strings.
+        :return: A Gear object.
+        """
+        if isinstance(encoded_string, str):
+            args = encoded_string.replace(" ", "").split(",")
+        else:
+            args = [i.replace(" ", "") for i in encoded_string]
+
+        raw_gear_set, raw_gear_type, raw_gear_rarity, raw_gear_star, *raw_stats = args
+
+        stats = [raw_stats[i : i + 3] for i in range(0, len(raw_stats), 3)]
+        raw_main_stat, *raw_sub_stats = [Stat.decode(sub_stat) for sub_stat in stats]
+
+        return cls(raw_gear_set, raw_gear_type, raw_gear_rarity, raw_gear_star, raw_main_stat, raw_sub_stats)
