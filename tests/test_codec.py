@@ -64,7 +64,7 @@ class TestNullOperations:
         assert Gear.decode("-1,-1,-1,-1,-1,-1,-1") == Gear()
 
 
-class TestSpaceCharacterHandling:
+class TestInvallidCharacterHandling:
     """
     Test the decoder on handling invalid characters.
 
