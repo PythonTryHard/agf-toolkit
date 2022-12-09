@@ -1,10 +1,12 @@
+from typing import Union
+
 import cv2
 import numpy as np
 import skimage
 from loguru import logger
 
 from agf_toolkit import templates
-from agf_toolkit.utils import color
+from agf_toolkit.processor import color
 
 AMBIGUITY_THRESHOLD = 0.05
 PURPLE_RARITY_STAR = (241, 142, 255)
@@ -29,6 +31,22 @@ def crop(img, top_left, bottom_right):
     """Crop an image"""
     cropped = img[top_left[1] : bottom_right[1], top_left[0] : bottom_right[0]]
     return cropped
+
+
+def rescale(
+    img: Union[cv2.UMat, np.ndarray[int, np.dtype[np.generic]]], factor: float
+) -> Union[cv2.UMat, np.ndarray[int, np.dtype[np.generic]]]:
+    """Rescale an image by a given factor."""
+    if isinstance(img, cv2.UMat):
+        img_array = img.get()
+    else:
+        img_array = img
+
+    img_h, img_w = img_array.shape[:2]
+
+    scaled_h, scaled_w = int(img_h / factor), int(img_w / factor)
+    resized = cv2.resize(img, (scaled_w, scaled_h))
+    return resized
 
 
 def extract_info_box(

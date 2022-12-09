@@ -4,8 +4,7 @@ from loguru import logger
 from tqdm import tqdm
 
 from agf_toolkit import templates
-from agf_toolkit.processor.image import template_match
-from agf_toolkit.utils.image import rescale
+from agf_toolkit.processor.image import rescale, template_match
 
 
 def _generate_scaling_factors(lower_bound: float, upper_bound: float, max_step: int) -> list[float]:
