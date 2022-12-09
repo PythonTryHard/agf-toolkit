@@ -262,7 +262,7 @@ python-versions = "~=3.7"
 
 [[package]]
 name = "certifi"
-version = "2022.9.24"
+version = "2022.12.7"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = false
@@ -2752,8 +2752,8 @@ cachetools = [
     {file = "cachetools-5.2.0.tar.gz", hash = "sha256:6a94c6402995a99c3970cc7e4884bb60b4a8639938157eeed436098bf9831757"},
 ]
 certifi = [
-    {file = "certifi-2022.9.24-py3-none-any.whl", hash = "sha256:90c1a32f1d68f940488354e36370f6cca89f0f106db09518524c88d6ed83f382"},
-    {file = "certifi-2022.9.24.tar.gz", hash = "sha256:0d9c601124e5a6ba9712dbc60d9c53c21e34f5f641fe83002317394311bdce14"},
+    {file = "certifi-2022.12.7-py3-none-any.whl", hash = "sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18"},
+    {file = "certifi-2022.12.7.tar.gz", hash = "sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3"},
 ]
 cffi = [
     {file = "cffi-1.15.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:a66d3508133af6e8548451b25058d5812812ec3798c886bf38ed24a98216fab2"},
@@ -3776,6 +3776,7 @@ paddlepaddle = [
     {file = "paddlepaddle-2.4.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:62c53e4561168896c9e767a63a593f3525686d99e12765877e3cfb080a456e23"},
     {file = "paddlepaddle-2.4.1-cp310-cp310-manylinux1_x86_64.whl", hash = "sha256:d05c4c9213aba0d4030ace88aaf16526379bd57a254a443acca34d46112c4b51"},
     {file = "paddlepaddle-2.4.1-cp310-cp310-win_amd64.whl", hash = "sha256:c226ca4c0a6749d1b271a9002a5ed9480981c6b879c2562a6c447b65486aecce"},
+    {file = "paddlepaddle-2.4.1-cp36-cp36m-macosx_10_6_intel.whl", hash = "sha256:52b7b8acdca651c99e0c585c0377c1a3720042b21966e443b7069c2bf6662000"},
     {file = "paddlepaddle-2.4.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:b5d080f7c89bc99eeb97d6ca43ea0bdc60d606a58033fdf30de338574e8fc4a6"},
     {file = "paddlepaddle-2.4.1-cp36-cp36m-win_amd64.whl", hash = "sha256:4cec0db4194c07057f8207d51c0d4c30ccd2a0609ca5267ff5d62eff6b0ff715"},
     {file = "paddlepaddle-2.4.1-cp37-cp37m-macosx_10_6_x86_64.whl", hash = "sha256:bc95d1c75c00fd80d74e8cafca42070c0301e395bf32db6b86c7e1f92e1bf0f0"},
