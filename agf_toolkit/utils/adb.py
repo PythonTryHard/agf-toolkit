@@ -4,7 +4,6 @@ import shutil
 import stat
 import subprocess
 import sys
-from pathlib import Path
 from zipfile import ZipFile
 
 import adbutils
@@ -36,7 +35,7 @@ def _monkeypatch_screenshot(self: adbutils.AdbDevice) -> np.ndarray[int, np.dtyp
 adbutils.AdbDevice.screenshot = _monkeypatch_screenshot
 
 
-ADB_DOWNLOAD_PATH = Path(DATA_DIR).expanduser()
+ADB_DOWNLOAD_PATH = DATA_DIR
 ADB_DOWNLOAD_FNAME = ADB_DOWNLOAD_PATH / "platform-tools.zip"
 ADB_DOWNLOAD_EXECUTABLE = ADB_DOWNLOAD_PATH / "platform-tools" / "adb"
 
