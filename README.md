@@ -36,12 +36,12 @@ poetry run python -m agf_tookit
 ## Configuration
 The toolkit is configured via a `.env` file. The (boiled down) example configuration is as follows:
 ```sh
-DEBUG=""
+LOGGING_LEVEL=""
 
 IDENTIFIER=""
 PORT=""
 ```
-- `DEBUG` when set to anything other than `""` will enable debug logging.
+- `LOGGING_LEVEL` is the logging level to use. Valid values are `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`. If not set, defaults to `INFO`.
 - `IDENTIFIER` is for the serial number of your Android device. You can find this by running `adb devices` in your terminal. If you're connecting via `IP`, this is the IP address of your Android device.
 - `PORT` is the debugging port of your Android device. This is ignored when connecting via `USB`.
 

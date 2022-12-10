@@ -3,29 +3,12 @@ __version__ = "0.0.1"
 __author__ = "PythonTryHard - Arisu#9695 (<@!263986827214585857>)"
 
 import os
-import re
-import sys
 
 from dotenv import load_dotenv
-from loguru import logger
 
 load_dotenv()
 
+print(os.environ.get("LOGGING_LEVEL", "INFO"))
+os.environ["LOGURU_LEVEL"] = os.environ.get("LOGGING_LEVEL", "INFO")
 
-def _verify_sub_stat_env_var(name: str) -> bool:
-    return name in os.environ and bool(re.match(r"^\d+,\d+", os.environ[name]))
-
-
-logger.remove()
-logger.add(
-    sys.stderr,
-    level="DEBUG" if bool(os.environ.get("DEBUG")) else "INFO",
-    format=(
-        "<g>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | "
-        "<level>{level: <8}</> | "
-        "<c>{name}</>:<c>{function}</>:<c>{line}</c> - <level>{message}</>"
-    ),
-)
-
-logger.debug("Logging 'DEBUG' messages too.")
-logger.info("Loading processing functions and libraries, this may take a while!")
+DATA_DIR = "~/.agf_toolkit"
