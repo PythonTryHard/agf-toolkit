@@ -29,4 +29,3 @@ if any(isinstance(i, NoneType) for i in [INFO_BOX, *STARS.values()]):
         "Failed to load templates! "
         "Please verify that ALL templates are present in the 'templates' directory as instructed!"
     )
-    sys.exit(1)
