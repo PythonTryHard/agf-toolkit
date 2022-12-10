@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "agf_toolkit"
-version = "0.0.1"
+version = "0.1.0"
 description = "A toolkit for Artery Gear: Fusion"
 authors = ["PythonTryHard <31789326+PythonTryHard@users.noreply.github.com>"]
 license = "BSD-3-Clause"
