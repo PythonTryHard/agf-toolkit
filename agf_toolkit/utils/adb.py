@@ -15,6 +15,8 @@ from adbutils import adb
 from loguru import logger
 from tqdm import tqdm
 
+from agf_toolkit import DATA_DIR
+
 
 def _monkeypatch_screenshot(self: adbutils.AdbDevice) -> np.ndarray[int, np.dtype[np.generic]]:
     """
@@ -34,7 +36,7 @@ def _monkeypatch_screenshot(self: adbutils.AdbDevice) -> np.ndarray[int, np.dtyp
 adbutils.AdbDevice.screenshot = _monkeypatch_screenshot
 
 
-ADB_DOWNLOAD_PATH = Path("~/.agf_toolkit").expanduser()
+ADB_DOWNLOAD_PATH = Path(DATA_DIR).expanduser()
 ADB_DOWNLOAD_FNAME = ADB_DOWNLOAD_PATH / "platform-tools.zip"
 ADB_DOWNLOAD_EXECUTABLE = ADB_DOWNLOAD_PATH / "platform-tools" / "adb"
 
