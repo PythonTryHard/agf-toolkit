@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 from loguru import logger
 
@@ -7,6 +8,7 @@ from agf_toolkit.processor.image import (
     extract_gear_star,
     extract_info_box,
     extract_sub_stat_rarity,
+    rescale,
 )
 from agf_toolkit.processor.text import (
     extract_gear_set,
@@ -45,3 +47,8 @@ def parse_screenshot(screenshot: np.ndarray[int, np.dtype[np.generic]]) -> Gear:
         main_stat=main_stat,
         sub_stats=sub_stats,
     )
+
+
+def parallel_parse_screenshot(file_path, scale):
+    """Helper function to parse screenshot in parallel."""
+    return parse_screenshot(rescale(cv2.imread(file_path), scale))
