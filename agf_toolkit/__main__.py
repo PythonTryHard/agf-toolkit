@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import sys
+from datetime import datetime
 from itertools import repeat
 from pathlib import Path
 
@@ -18,7 +19,7 @@ PARSED_RESULTS_FILE = (DATA_DIR / "parsed_results.json").expanduser()
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-app = typer.Typer()
+app = typer.Typer(no_args_is_help=True)
 
 
 @app.command()
@@ -115,6 +116,49 @@ def parse_files(
     parsed_results.update(result_dict)
     with open(PARSED_RESULTS_FILE, "w", encoding="utf-8") as fp:
         json.dump(parsed_results, fp, indent=4)
+
+
+@app.command()
+def parse_screen():
+    """
+    Start a live parsing session using Android Debug Bridge.
+    """
+    logger.info("Loading modules, please wait...")
+    from agf_toolkit.processor.image import rescale
+    from agf_toolkit.processor.utils import parse_screenshot
+    from agf_toolkit.utils import adb
+
+    # Ensure user has calibrated the toolkit
+    if not os.path.exists(CALIBRATION_FILE):
+        logger.critical("You have not calibrated the toolkit yet! Please run 'agf_toolkit calibrate --help' first!")
+        sys.exit(1)
+
+    with open(CALIBRATION_FILE, encoding="utf-8") as fp:
+        scale = float(fp.read())
+
+    logger.info("Starting live parsing session...")
+    logger.warning("Press Enter to initiate a screenshot and parsing.")
+    logger.warning("Press Ctrl+C to exit.")
+    try:
+        with open(PARSED_RESULTS_FILE, encoding="utf-8") as fp:
+            parsed_results = json.load(fp)
+
+        while True:
+            input("Press Enter to continue...")
+            image = adb.screencap()
+            result = parse_screenshot(rescale(image, scale)).encode()
+
+            # Store the parsed gear back
+            sha256 = hashlib.sha3_256(image).hexdigest()
+            file_name = f"live_{datetime.now()}"
+            parsed_results.update({sha256: {"file_name": file_name, "result": result}})
+            with open(PARSED_RESULTS_FILE, encoding="utf-8") as fp:
+                json.dump(parsed_results, fp, indent=4)
+
+            logger.info(f"Result saved to {file_name}!")
+
+    except KeyboardInterrupt:
+        logger.info("Exiting...")
 
 
 app()
