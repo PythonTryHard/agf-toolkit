@@ -1569,7 +1569,7 @@ python-versions = "*"
 
 [[package]]
 name = "paddleocr"
-version = "2.6.1.1"
+version = "2.6.1.2"
 description = "Awesome OCR toolkits based on PaddlePaddle （8.6M ultra-lightweight pre-trained model, support training and deployment among server, mobile, embeded and IoT devices"
 category = "main"
 optional = false
@@ -2756,7 +2756,7 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10, <3.11"
-content-hash = "a40bfe95f36a6c2f3067ac157afbf33906b5ee6fb8b6a07ab78d6bcc7db19746"
+content-hash = "c92a551716e454d6f15959ad3c581751a1d7f071c0b84a8740f3659db7562e72"
 
 [metadata.files]
 adbutils = []
@@ -3996,7 +3996,7 @@ paddle-bfloat = [
     {file = "paddle_bfloat-0.1.7.tar.gz", hash = "sha256:9ab8d00ad2ec5cebea7871cc8ee331eb916f31f676fb04e1d5aa3d64913ef71c"},
 ]
 paddleocr = [
-    {file = "paddleocr-2.6.1.1-py3-none-any.whl", hash = "sha256:be0fc2105118405eb8e7db066c3f08e875a05861af28c27ba863b467e2e14789"},
+    {file = "paddleocr-2.6.1.2-py3-none-any.whl", hash = "sha256:4ccf80cc46863223bea7a2cf4474aa7f28af1fbb9a3a42dda98ec4b2f7e3d947"},
 ]
 paddlepaddle = [
     {file = "paddlepaddle-2.4.1-cp310-cp310-macosx_10_14_x86_64.whl", hash = "sha256:dab114fa96852004872221f8d02225b8be2a68405b5db8025b9e308cf9f054ee"},
