@@ -14,6 +14,7 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry.dependencies]
+# Core dependencies
 python = "^3.10, <3.11"
 loguru = "^0.6.0"
 python-dotenv = "^0.21.0"   
@@ -25,7 +26,13 @@ scikit-image = "^0.19.3"
 adbutils = { git = "https://github.com/PythonTryHard/adbutils" }
 requests = "^2.28.1"
 tqdm = "^4.64.1"
-typer = {extras = ["all"], version = "^0.7.0"}
+
+# Extras for CLI
+typer = {version = "^0.7.0", extras = ["all"], optional = true}
+
+# Extras for networking
+mitmproxy = {version = "^9.0.1", optional = true}
+pyzmq = {version = "^24.0.1", optional = true}
 
 
 [tool.poetry.group.dev]
@@ -42,12 +49,9 @@ pytest = "^7.2.0"
 types-requests = "^2.28.11.2"
 
 
-[tool.poetry.group.network]
-optional = true
-
-[tool.poetry.group.network.dependencies]
-mitmproxy = "^9.0.1"
-pyzmq = "^24.0.1"
+[tool.poetry.extras]
+cli = ["typer[all]"]
+networking = ["mitmproxy", "pyzmq"]
 
 
 [tool.black]

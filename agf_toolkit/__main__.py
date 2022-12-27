@@ -8,7 +8,11 @@ from datetime import datetime
 from itertools import repeat
 from pathlib import Path
 
-import typer
+try:
+    import typer
+except ImportError:
+    print("You are missing the required dependencies! Please run 'poetry install --with=cli' to install them.")
+    sys.exit(1)
 from loguru import logger
 from tqdm import tqdm
 
