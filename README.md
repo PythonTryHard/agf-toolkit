@@ -15,6 +15,7 @@ With these feature(s) to come (in no particular order and without promises):
 
 ## Installation
 ### From release (recommended)
+By default, this will the CPU version of the underlying OCR module. Pre-built wheels with GPU support will be supplied at a later date. 
 ```sh
 pip install https://github.com/PythonTryHard/agf-toolkit/releases/download/v0.1.0/agf-toolkit-0.1.0-py3-none-any.whl
 ```
