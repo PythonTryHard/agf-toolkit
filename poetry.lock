@@ -5082,10 +5082,10 @@ cffi = {version = ">=1.11", markers = "platform_python_implementation == \"PyPy\
 cffi = ["cffi (>=1.11)"]
 
 [extras]
-cli = []
+cli = ["typer"]
 networking = ["mitmproxy", "pyzmq"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10, <3.11"
-content-hash = "ba098ffa5171c66ec5b1a288176bd26a82738f1408a2575ed5dfa42abb6d73c9"
+content-hash = "6360863735ba9dd88457b5e1f99f2c97e42a133d8b88411cd58d4268e39f225a"

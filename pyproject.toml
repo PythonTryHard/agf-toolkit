@@ -50,7 +50,7 @@ types-requests = "^2.28.11.2"
 
 
 [tool.poetry.extras]
-cli = ["typer[all]"]
+cli = ["typer"]
 networking = ["mitmproxy", "pyzmq"]
 
 
