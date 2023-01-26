@@ -17,18 +17,15 @@ build-backend = "poetry.core.masonry.api"
 # Core dependencies
 python = "^3.10, <3.11"
 loguru = "^0.6.0"
-python-dotenv = "^0.21.0"   
+python-dotenv = "^0.21.0"
 numpy = "^1.24.1"
 paddlepaddle = "^2.4.1"
-paddleocr = "^2.6.1.2"
+paddleocr = { url = "https://github.com/PythonTryHard/wheels/releases/download/tip/paddleocr-2.6.1.2-py3-none-any.whl" }
 opencv-python = "^4.7.0.68"
 scikit-image = "^0.19.3"
 adbutils = { git = "https://github.com/PythonTryHard/adbutils" }
 requests = "^2.28.1"
 tqdm = "^4.64.1"
-
-# Extras for CLI
-typer = {version = "^0.7.0", extras = ["all"], optional = true}
 
 # Extras for networking
 mitmproxy = {version = "^9.0.1", optional = true}
@@ -50,7 +47,6 @@ types-requests = "^2.28.11.2"
 
 
 [tool.poetry.extras]
-cli = ["typer"]
 networking = ["mitmproxy", "pyzmq"]
 
 
