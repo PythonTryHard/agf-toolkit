@@ -11,7 +11,7 @@ from pathlib import Path
 try:
     import typer
 except ImportError:
-    print("You are missing the required dependencies! Please run 'poetry install --with=cli' to install them.")
+    print("You are missing dependencies for the command-line interface (CLI)! Refer to docs for instruction!")
     sys.exit(1)
 from loguru import logger
 from tqdm import tqdm
@@ -23,7 +23,25 @@ PARSED_RESULTS_FILE = (DATA_DIR / "parsed_results.json").expanduser()
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-app = typer.Typer(no_args_is_help=True)
+app = typer.Typer(no_args_is_help=True, add_completion=False)
+
+
+def get_file_hash(file_path):
+    """Calculate the sha256 hash of a file"""
+    sha256_hash = hashlib.sha3_256()
+    with open(file_path, "rb") as fp:
+        for byte_block in iter(lambda: fp.read(4096), b""):
+            sha256_hash.update(byte_block)
+    return sha256_hash.hexdigest()
+
+
+@app.callback()
+def global_options(debug: bool = False):
+    """Global options for the CLI"""
+    if debug:
+        os.environ["LOGURU_LEVEL"] = "DEBUG"
+    else:
+        os.environ["LOGURU_LEVEL"] = "INFO"
 
 
 @app.command()
@@ -52,15 +70,6 @@ def calibrate(
         fp.write(str(scale))
 
     logger.info(f"Calibration complete! Scale: {scale}. This value has been saved to {CALIBRATION_FILE}.")
-
-
-def get_file_hash(file_path):
-    """Calculate the sha256 hash of a file"""
-    sha256_hash = hashlib.sha3_256()
-    with open(file_path, "rb") as fp:
-        for byte_block in iter(lambda: fp.read(4096), b""):
-            sha256_hash.update(byte_block)
-    return sha256_hash.hexdigest()
 
 
 @app.command()
