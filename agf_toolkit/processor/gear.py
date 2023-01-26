@@ -52,7 +52,21 @@ class Stat(Encodable):
         return f"Stat(stat_type={self.stat_type !r}, stat_value={self.stat_value !r}, rarity={self.stat_rarity !r})"
 
     def validate(self) -> None:
-        """Validate the data in the object and modify the data in-place. All invalid data will be set to `None`."""
+        """
+        Validate the data in the object and modify the data in-place.
+
+        Step 1: ATK, DEF, and HP type when fed with percentages will be changed into ATK (%), DEF (%), and HP (%).
+        Step 2:  All invalid data will be set to `None`.
+        """
+        # Step 1
+        if (
+            self.stat_type in ("ATK", "DEF", "HP")
+            and isinstance(self.stat_value, str)
+            and self.stat_value.endswith("%")
+        ):
+            self.stat_type = f"{self.stat_type} (%)"
+
+        # Step 2
         for mapping, attribute in [
             (STAT_TYPE_MAPPING, "stat_type"),
             (RARITY_GRADE_MAPPING, "stat_rarity"),
