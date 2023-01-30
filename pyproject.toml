@@ -22,7 +22,7 @@ paddlepaddle = "^2.4.1"
 paddleocr = { url = "https://github.com/PythonTryHard/wheels/releases/download/tip/paddleocr-2.6.1.2-py3-none-any.whl" }
 opencv-python = "^4.7.0.68"
 scikit-image = "^0.19.3"
-adbutils = "^1.2.2"
+adbutils = "^1.2.3"
 requests = "^2.28.2"
 tqdm = "^4.64.1"
 
