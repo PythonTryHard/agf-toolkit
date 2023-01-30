@@ -1,3 +1,5 @@
+from typing import Generator
+
 import cv2
 import numpy as np
 from loguru import logger
@@ -7,9 +9,9 @@ from agf_toolkit import templates
 from agf_toolkit.processor.image import rescale, template_match
 
 
-def _generate_scaling_factors(lower_bound: float, upper_bound: float, max_step: int) -> list[float]:
+def _generate_scaling_factors(lower_bound: float, upper_bound: float, max_step: int) -> Generator[float, None, None]:
     """Return a scaling factor from the upper bound to the lower bound at a given step."""
-    return list(np.linspace(lower_bound, upper_bound, max_step))[::-1]
+    yield from list(np.linspace(lower_bound, upper_bound, max_step))[::-1]
 
 
 def auto_calibrate_scale(
@@ -18,8 +20,7 @@ def auto_calibrate_scale(
     scaling_lower_bound: float = 0.8,
     scaling_upper_bound: float = 1.2,
     scaling_step: int = 20,
-    _first_step: bool = True,
-    _current_scale: float = 1.0,
+    _current_scale: float = None,
 ) -> float:
     """
     Recursively calibrate the screenshot to maximise template fit.
@@ -33,7 +34,7 @@ def auto_calibrate_scale(
     template_umat = cv2.UMat(templates.INFO_BOX)
 
     # Set up scaling factors
-    if _first_step:
+    if _current_scale is None:  # First step detection
         initial_scale = screenshot.shape[0] / 1080
         logger.debug(f"Screenshot normalised to 1080-pixel height (initial scale: {initial_scale:.2f})")
         factors = _generate_scaling_factors(
@@ -70,6 +71,5 @@ def auto_calibrate_scale(
         rounds=rounds - 1,
         scaling_lower_bound=scaling_lower_bound,
         scaling_upper_bound=scaling_upper_bound,
-        _first_step=False,
         _current_scale=best_scaling_factor,
     )
