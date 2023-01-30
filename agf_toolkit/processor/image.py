@@ -33,20 +33,27 @@ def crop(img, top_left, bottom_right):
     return cropped
 
 
+def calculate_rescaled_size(
+    img: Union[cv2.UMat, np.ndarray[int, np.dtype[np.generic]]],
+    factor: float,
+) -> tuple[int, int]:
+    """Calculate the rescaled size of an image."""
+    if isinstance(img, cv2.UMat):
+        img_h, img_w = img.get().shape[:2]
+    else:
+        img_h, img_w = img.shape[:2]
+
+    scaled_h, scaled_w = int(img_h * factor), int(img_w * factor)
+    return scaled_w, scaled_h
+
+
 def rescale(
-    img: Union[cv2.UMat, np.ndarray[int, np.dtype[np.generic]]], factor: float
+    img: Union[cv2.UMat, np.ndarray[int, np.dtype[np.generic]]],
+    target_w: int,
+    target_h: int,
 ) -> Union[cv2.UMat, np.ndarray[int, np.dtype[np.generic]]]:
     """Rescale an image by a given factor."""
-    if isinstance(img, cv2.UMat):
-        img_array = img.get()
-    else:
-        img_array = img
-
-    img_h, img_w = img_array.shape[:2]
-
-    scaled_h, scaled_w = int(img_h / factor), int(img_w / factor)
-    resized = cv2.resize(img, (scaled_w, scaled_h))
-    return resized
+    return cv2.resize(img, (target_w, target_h))
 
 
 def extract_info_box(
@@ -70,7 +77,6 @@ def extract_info_box(
 
     # Cropping out the info box to reduce noise
     info_box = crop(img, top_left, bottom_right)
-
     return info_box
 
 
