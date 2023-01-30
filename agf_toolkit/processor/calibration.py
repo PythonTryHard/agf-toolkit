@@ -1,5 +1,3 @@
-from typing import Generator
-
 import cv2
 import numpy as np
 from loguru import logger
@@ -9,9 +7,9 @@ from agf_toolkit import templates
 from agf_toolkit.processor.image import rescale, template_match
 
 
-def _generate_scaling_factors(lower_bound: float, upper_bound: float, max_step: int) -> Generator[float, None, None]:
+def _generate_scaling_factors(lower_bound: float, upper_bound: float, max_step: int) -> list[float]:
     """Return a scaling factor from the upper bound to the lower bound at a given step."""
-    yield from list(np.linspace(lower_bound, upper_bound, max_step))[::-1]
+    return list(np.linspace(lower_bound, upper_bound, max_step))[::-1]
 
 
 def auto_calibrate_scale(
