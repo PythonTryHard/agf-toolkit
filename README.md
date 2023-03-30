@@ -1,3 +1,8 @@
+# NOTE
+Project is on hiatus due to in-real-life issues, overall loss of motivation and I have essentially stopped playing the game. If you wish to take over, please open an issue first for discussion.
+
+Currently, off-GitHub progress for the repository has been documenting the code. Development will hopefully resume early June 2023.
+
 # `Artery Gear: Fusion`'s Toolkit
 ![Python: 3.10](https://img.shields.io/badge/python-3.10-blue)
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue) 
