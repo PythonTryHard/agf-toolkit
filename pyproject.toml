@@ -16,7 +16,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.dependencies]
 # Core dependencies
 python = "^3.10, <3.11"
-loguru = "^0.6.0"
+loguru = "^0.7.0"
 numpy = "^1.24.1"
 paddlepaddle = "^2.4.1"
 paddleocr = { url = "https://github.com/PythonTryHard/wheels/releases/download/tip/paddleocr-2.6.1.2-py3-none-any.whl" }
